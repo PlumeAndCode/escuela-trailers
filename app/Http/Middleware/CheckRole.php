@@ -17,7 +17,9 @@ class CheckRole
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         if (! Auth::check()) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return $request->expectsJson()
+                ? response()->json(['message' => 'Unauthorized'], 401)
+                : redirect()->route('login');
         }
 
         $user = Auth::user();
@@ -25,12 +27,16 @@ class CheckRole
         // Check if user is active
         if (! $user->estado_usuario) {
             Auth::logout();
-            return response()->json(['message' => 'Usuario inactivo'], 403);
+            return $request->expectsJson()
+                ? response()->json(['message' => 'Usuario inactivo'], 403)
+                : redirect()->route('login')->with('error', 'Usuario inactivo');
         }
 
         // Check if user has one of the required roles
         if (! in_array($user->rol, $roles)) {
-            return response()->json(['message' => 'Forbidden - insufficient permissions'], 403);
+            return $request->expectsJson()
+                ? response()->json(['message' => 'Forbidden - insufficient permissions'], 403)
+                : abort(403, 'Forbidden - insufficient permissions');
         }
 
         return $next($request);
