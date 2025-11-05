@@ -31,10 +31,17 @@ class RoleAndPermissionSeeder extends Seeder
             'view_services',
 
             // Hiring management
+<<<<<<< HEAD
             'create_hierings',
             'edit_hierings',
             'delete_hierings',
             'view_hierings',
+=======
+            'create_hirings',
+            'edit_hirings',
+            'delete_hirings',
+            'view_hirings',
+>>>>>>> 759c4bc (chore(view): añadi un espacio)
 
             // Course management
             'create_courses',
