@@ -15,11 +15,35 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Seed roles and permissions first
+        $this->call(RoleAndPermissionSeeder::class);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Create an admin user
+        $adminUser = User::factory()->create([
+            'nombre_completo' => 'Administrador',
+            'email' => 'admin@escuela-trailers.com',
+            'rol' => 'administrador',
+            'estado_usuario' => true,
         ]);
+        $adminUser->assignRole('administrador');
+
+        // Create a manager user
+        $managerUser = User::factory()->create([
+            'nombre_completo' => 'Encargado',
+            'email' => 'manager@escuela-trailers.com',
+            'rol' => 'encargado',
+            'estado_usuario' => true,
+        ]);
+        $managerUser->assignRole('encargado');
+
+        // Create a client user
+        $clientUser = User::factory()->create([
+            'nombre_completo' => 'Cliente',
+            'email' => 'client@escuela-trailers.com',
+            'rol' => 'cliente',
+            'estado_usuario' => true,
+        ]);
+        $clientUser->assignRole('cliente');
     }
 }
+

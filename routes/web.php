@@ -55,6 +55,7 @@ Route::middleware([
 });
 
 // Rutas de cliente
+// Rutas de cliente
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -62,4 +63,4 @@ Route::middleware([
     'role:cliente',
 ])->prefix('/client')->name('client.')->group(function () {
     // Aquí irán las rutas de cliente
-});
+});                  
