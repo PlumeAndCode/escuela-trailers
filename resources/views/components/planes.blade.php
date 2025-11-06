@@ -1,14 +1,18 @@
 <!-- COURSES GRID -->
 <section class="py-20 bg-white">
     <div class="container mx-auto px-5">
-        <div class="courses-grid grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-8">
             <!-- Curso Completo -->
-            <div class="course-card bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group">
+            <div class="course-card bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group hover:-translate-y-4">
                 <div class="course-header relative h-64 bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden">
+                    <!-- Efecto de rotación animado -->
+                    <div class="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-to-r from-transparent via-amber-500/10 to-transparent animate-spin"
+                         style="animation-duration: 6s;"></div>
+                    
                     <div class="course-badge absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-1 rounded-full text-sm font-bold z-10 animate-pulse">
                         POPULAR
                     </div>
-                    <div class="course-icon absolute inset-0 flex items-center justify-center text-6xl z-0 group-hover:scale-110 transition-transform duration-500">
+                    <div class="course-icon absolute inset-0 flex items-center justify-center text-6xl z-0 animate-float">
                         📚
                     </div>
                 </div>
@@ -23,27 +27,27 @@
                         Programa integral diseñado para formar conductores profesionales desde cero. Incluye teoría, práctica y preparación para examen oficial.
                     </p>
                     <ul class="course-features space-y-3 mb-6">
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-amber-600 transition-all">
                             <span class="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             12 lecciones prácticas intensivas
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-amber-600 transition-all">
                             <span class="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Material didáctico completo incluido
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-amber-600 transition-all">
                             <span class="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Examen de manejo y evaluación
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-amber-600 transition-all">
                             <span class="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Certificado oficial al finalizar
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-amber-600 transition-all">
                             <span class="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Apoyo post-curso ilimitado
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-amber-600 transition-all">
                             <span class="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Garantía de aprobación 95%
                         </li>
@@ -65,12 +69,16 @@
             </div>
 
             <!-- Lecciones Individuales -->
-            <div class="course-card bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group">
+            <div class="course-card bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group hover:-translate-y-4">
                 <div class="course-header relative h-64 bg-gradient-to-br from-blue-900 to-blue-800 overflow-hidden">
+                    <!-- Efecto de rotación animado -->
+                    <div class="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-to-r from-transparent via-blue-500/10 to-transparent animate-spin"
+                         style="animation-duration: 6s;"></div>
+                    
                     <div class="course-badge absolute top-4 right-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-1 rounded-full text-sm font-bold z-10">
                         FLEXIBLE
                     </div>
-                    <div class="course-icon absolute inset-0 flex items-center justify-center text-6xl z-0 group-hover:scale-110 transition-transform duration-500">
+                    <div class="course-icon absolute inset-0 flex items-center justify-center text-6xl z-0 animate-float">
                         🎯
                     </div>
                 </div>
@@ -85,27 +93,27 @@
                         Clases personalizadas adaptadas a tu nivel y necesidades. Ideal para reforzar habilidades específicas o practicar antes del examen.
                     </p>
                     <ul class="course-features space-y-3 mb-6">
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-blue-600 transition-all">
                             <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Sesiones de 2 horas cada una
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-blue-600 transition-all">
                             <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Horarios 100% flexibles
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-blue-600 transition-all">
                             <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Instructor dedicado exclusivo
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-blue-600 transition-all">
                             <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Práctica totalmente personalizada
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-blue-600 transition-all">
                             <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Seguimiento detallado del progreso
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-blue-600 transition-all">
                             <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Reserva online disponible
                         </li>
@@ -126,14 +134,17 @@
                 </div>
             </div>
 
-            <!-- Los otros dos cursos siguen el mismo patrón -->
             <!-- Trámite de Licencia -->
-            <div class="course-card bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group">
+            <div class="course-card bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group hover:-translate-y-4">
                 <div class="course-header relative h-64 bg-gradient-to-br from-green-900 to-green-800 overflow-hidden">
+                    <!-- Efecto de rotación animado -->
+                    <div class="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-to-r from-transparent via-green-500/10 to-transparent animate-spin"
+                         style="animation-duration: 6s;"></div>
+                    
                     <div class="course-badge absolute top-4 right-4 bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-1 rounded-full text-sm font-bold z-10">
                         RÁPIDO
                     </div>
-                    <div class="course-icon absolute inset-0 flex items-center justify-center text-6xl z-0 group-hover:scale-110 transition-transform duration-500">
+                    <div class="course-icon absolute inset-0 flex items-center justify-center text-6xl z-0 animate-float">
                         📄
                     </div>
                 </div>
@@ -148,27 +159,27 @@
                         Servicio completo de gestión para obtener tu licencia de conductor profesional. Nos encargamos de todo el proceso administrativo.
                     </p>
                     <ul class="course-features space-y-3 mb-6">
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-green-600 transition-all">
                             <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Gestión completa del trámite
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-green-600 transition-all">
                             <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Preparación para examen teórico
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-green-600 transition-all">
                             <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Toda la documentación incluida
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-green-600 transition-all">
                             <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Asesoría legal especializada
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-green-600 transition-all">
                             <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Entrega a domicilio sin costo
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-green-600 transition-all">
                             <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Seguimiento hasta obtención
                         </li>
@@ -190,12 +201,16 @@
             </div>
 
             <!-- Renta de Tráilers -->
-            <div class="course-card bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group">
+            <div class="course-card bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group hover:-translate-y-4">
                 <div class="course-header relative h-64 bg-gradient-to-br from-purple-900 to-purple-800 overflow-hidden">
+                    <!-- Efecto de rotación animado -->
+                    <div class="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-to-r from-transparent via-purple-500/10 to-transparent animate-spin"
+                         style="animation-duration: 6s;"></div>
+                    
                     <div class="course-badge absolute top-4 right-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-bold z-10">
                         DISPONIBLE 24/7
                     </div>
-                    <div class="course-icon absolute inset-0 flex items-center justify-center text-6xl z-0 group-hover:scale-110 transition-transform duration-500">
+                    <div class="course-icon absolute inset-0 flex items-center justify-center text-6xl z-0 animate-float">
                         🚚
                     </div>
                 </div>
@@ -210,27 +225,27 @@
                         Flota moderna de tráilers disponibles para renta. Unidades en excelente estado con mantenimiento garantizado y seguro incluido.
                     </p>
                     <ul class="course-features space-y-3 mb-6">
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-purple-600 transition-all">
                             <span class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Renta por día completo (24hrs)
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-purple-600 transition-all">
                             <span class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Seguro de cobertura amplia
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-purple-600 transition-all">
                             <span class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Mantenimiento 100% garantizado
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-purple-600 transition-all">
                             <span class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Disponibilidad las 24 horas
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-purple-600 transition-all">
                             <span class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Servicio de entrega y recogida
                         </li>
-                        <li class="flex items-center text-gray-700">
+                        <li class="flex items-center text-gray-700 hover:pl-3 hover:text-purple-600 transition-all">
                             <span class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm mr-3 flex-shrink-0">✓</span>
                             Soporte técnico incluido
                         </li>

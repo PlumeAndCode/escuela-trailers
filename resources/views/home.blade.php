@@ -99,13 +99,13 @@
                 <span class="text-amber-500 font-semibold text-lg">Nuestros Servicios</span>
                 <h2 class="text-4xl font-bold text-gray-900 mt-2">Elige el Servicio que Necesitas</h2>
                 <!-- Aquí incluirías tu componente de planes -->
-                {{-- @include('components.planes') --}}
+                 @include('components.planes') 
             </div>
         </div>
     </section>
 
     <!-- Estadísticas -->
-    <section class="py-20 bg-gradient-to-r from-amber-500 to-amber-600 text-white">
+    <section class="py-20 bg-gradient-to-r  from-gray-900 to-gray-800 text-white">
         <div class="container mx-auto px-5">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                 <div class="stat-item">
