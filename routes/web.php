@@ -2,9 +2,27 @@
 
 use Illuminate\Support\Facades\Route;
 
+// Rutas públicas (Tus nuevas rutas)
 Route::get('/', function () {
+    return view('home');
+})->name('home');
+
+Route::get('/servicios', function () {
+    return view('services');
+})->name('services');
+
+Route::get('/nosotros', function () {
+    return view('about');
+})->name('about');
+
+Route::get('/contacto', function () {
+    return view('contact');
+})->name('contact');
+
+// Ruta original de welcome (puedes mantenerla o redirigir)
+Route::get('/welcome', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 Route::middleware([
     'auth:sanctum',
@@ -45,4 +63,3 @@ Route::middleware([
 ])->prefix('/client')->name('client.')->group(function () {
     // Aquí irán las rutas de cliente
 });
-
