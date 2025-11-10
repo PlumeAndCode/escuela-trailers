@@ -44,6 +44,39 @@ class DatabaseSeeder extends Seeder
             'estado_usuario' => true,
         ]);
         $clientUser->assignRole('cliente');
+
+        // Seed additional users for testing
+        User::factory(5)->create()->each(function ($user) {
+            $user->assignRole('cliente');
+        });
+
+        // Seed servicios y trailers (tablas independientes)
+        $this->call([
+            ServiciosSeeder::class,
+            TrailersSeeder::class,
+        ]);
+
+        // Seed contrataciones (depende de users y servicios)
+        $this->call(ContratacionesSeeder::class);
+
+        // Seed cursos y lecciones (dependen de contrataciones)
+        $this->call([
+            CursosSeeder::class,
+            LeccionesSeeder::class,
+            AvanceLeccionSeeder::class,
+        ]);
+
+        // Seed lecciones individuales (dependen de contrataciones)
+        $this->call(LeccionesIndividualesSeeder::class);
+
+        // Seed trámites de licencia (dependen de contrataciones)
+        $this->call(TramitesLicenciaSeeder::class);
+
+        // Seed rentas de tráiler (dependen de contrataciones y trailers)
+        $this->call(RentasTrailerSeeder::class);
+
+        // Seed pagos (dependen de contrataciones)
+        $this->call(PagosSeeder::class);
     }
 }
 
