@@ -10,7 +10,7 @@ Antes de clonar el proyecto, instala las siguientes herramientas:
 - Composer 2.x
 - Node.js y npm
 - PostgreSQL (local o remoto)
-  -- Git
+- Git
 - XAMPP (recomendado)
 
 ## Uso recomendado: XAMPP
