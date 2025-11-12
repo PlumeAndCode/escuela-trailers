@@ -1,6 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Livewire\Admin\Index as AdminIndex;
+use App\Livewire\Admin\Users as AdminUsers;
+use App\Livewire\Admin\Pagos as AdminPagos;
+use App\Livewire\Admin\Reportes as AdminReportes;
+use App\Livewire\Admin\Control as AdminControl;
 
 // Rutas públicas (Tus nuevas rutas)
 Route::get('/', function () {
@@ -34,14 +39,26 @@ Route::middleware([
     })->name('dashboard');
 });
 
-// Rutas de administración - Solo para administradores
+// Rutas de administración - Solo para administradores - USANDO MIDDLEWARE PARA LOS ROLES
+/*
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
     'role:administrador',
-])->prefix('/admin')->name('admin.')->group(function () {
-    // Aquí irán las rutas de administración
+])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', Dashboard::class)->name('dashboard'); 
+    Route::get('/usuarios', Users::class)->name('users');
+});
+*/
+
+//Rutas de administración mientras no hay base de datos
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', AdminIndex::class)->name('dashboard');
+    Route::get('/users', AdminUsers::class)->name('users.index');
+    Route::get('/pagos', AdminPagos::class)->name('pagos.index');
+    Route::get('/reportes', AdminReportes::class)->name('reportes.index');
+    Route::get('/control', AdminControl::class)->name('control.index');
 });
 
 // Rutas de gestión - Para encargados
