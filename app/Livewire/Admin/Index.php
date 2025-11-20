@@ -12,12 +12,12 @@ class Index extends Component
     public function mount()
     {
         // PORQUE NO HAY BASE DE DATOS AUN
-        $this->user = Auth::user() ?: (object)[
-            'nombre_completo' => 'Administrador Demo',
-            'email' => 'admin@demo.local',
-            'profile_photo_url' => asset('images/default-avatar.png'),
-            'rol' => 'administrador',
-        ];
+        //$this->user = Auth::user() ?: (object)[
+          //  'nombre_completo' => 'Administrador Demo',
+            //'email' => 'admin@demo.local',
+            //'profile_photo_url' => asset('images/default-avatar.png'),
+            //'rol' => 'administrador',
+        //];
     }
 
     public function render()
