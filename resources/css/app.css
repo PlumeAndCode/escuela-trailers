@@ -2,134 +2,99 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Animaciones base que ya tenías */
-@layer utilities {
-    .animate-slideIn {
-        animation: slideIn 0.3s ease;
+/* Asegurar que los colores primary se apliquen correctamente */
+@layer components {
+    .bg-primary-50 {
+        @apply bg-yellow-50;
     }
     
-    .animate-fadeInUp {
-        animation: fadeInUp 0.8s ease-out;
+    .bg-primary-500 {
+        @apply bg-amber-500;
+    }
+    
+    .bg-primary-600 {
+        @apply bg-amber-600;
+    }
+    
+    .text-primary-500 {
+        @apply text-amber-500;
+    }
+    
+    .text-primary-600 {
+        @apply text-amber-600;
+    }
+
+    .hover\:bg-primary-500:hover {
+        @apply hover:bg-amber-500;
+    }
+
+    .hover\:bg-primary-600:hover {
+        @apply hover:bg-amber-600;
+    }
+
+    .focus\:ring-primary-500:focus {
+        @apply focus:ring-amber-500;
+    }
+
+    .bg-dark-900 {
+        @apply bg-slate-900;
+    }
+
+    .bg-dark-800 {
+        @apply bg-slate-800;
+    }
+
+    .bg-dark-700 {
+        @apply bg-slate-700;
     }
 }
 
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Nuevas animaciones y utilidades */
-@keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-}
-
-@keyframes pulse-glow {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-/* Utilidades adicionales */
-.animate-fadeInDown {
-    animation: fadeInDown 0.8s ease-out;
-}
-
-.animate-float {
-    animation: float 3s ease-in-out infinite;
-}
-
-.animate-pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
-}
-
-/* Gradientes personalizados */
-.bg-gradient-custom {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-}
-
-.bg-gradient-dark {
-    background: linear-gradient(135deg, #1a202c, #2d3748);
-}
-
-/* Efectos hover */
-.hover-lift {
-    transition: all 0.3s ease;
-}
-
-.hover-lift:hover {
-    transform: translateY(-5px);
-}
-
-.hover-lift-lg:hover {
-    transform: translateY(-10px);
-}
-
-/* Sombras personalizadas */
-.shadow-glow {
-    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
-}
-
-.shadow-glow-hover:hover {
-    box-shadow: 0 15px 40px rgba(245, 158, 11, 0.4);
-}
-
-/* Efectos de subrayado animado */
-.link-underline {
-    position: relative;
-}
-
-.link-underline::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: -5px;
-    left: 0;
-    background: #f59e0b;
-    transition: width 0.3s;
-}
-
-.link-underline:hover::after {
-    width: 100%;
-}
-
-/* Estilos base personalizados */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
+/* Estilos globales */
 body {
-    font-family: 'Figtree', system-ui, sans-serif;
-    line-height: 1.6;
-    color: #333;
+    @apply bg-gray-100;
+}
+
+table th {
+    @apply font-bold text-center;
+}
+
+table td {
+    @apply py-3 px-4 text-center;
+}
+
+/* Estilos base opcionales */
+@layer base {
+    body {
+        @apply bg-gray-100;
+    }
+}
+
+@layer components {
+    /* Tablas */
+    .table-header {
+        @apply bg-slate-900 text-white font-bold;
+    }
+
+    .table-cell {
+        @apply px-6 py-4 text-center border-b border-gray-200;
+    }
+
+    /* Botones */
+    .btn-primary {
+        @apply bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-2 rounded-lg transition-all duration-300;
+    }
+
+    .btn-secondary {
+        @apply bg-gray-500 hover:bg-gray-600 text-white font-semibold px-6 py-2 rounded-lg transition-all duration-300;
+    }
+
+    /* Inputs */
+    .input-field {
+        @apply px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white text-gray-900 transition-all;
+    }
+
+    /* Cards */
+    .card {
+        @apply bg-white rounded-lg shadow-md border border-gray-200;
+    }
 }
