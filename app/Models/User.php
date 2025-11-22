@@ -11,6 +11,7 @@ use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -71,5 +72,15 @@ class User extends Authenticatable
             'password' => 'hashed',
             'estado_usuario' => 'boolean',
         ];
+    }
+
+    /**
+     * Relación: Un usuario tiene muchas contrataciones
+     *
+     * @return HasMany
+     */
+    public function contrataciones(): HasMany
+    {
+        return $this->hasMany(Contratacion::class, 'id_usuario');
     }
 }
