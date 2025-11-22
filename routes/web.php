@@ -6,6 +6,10 @@ use App\Livewire\Admin\Users as AdminUsers;
 use App\Livewire\Admin\Pagos as AdminPagos;
 use App\Livewire\Admin\Reportes as AdminReportes;
 use App\Livewire\Admin\Control as AdminControl;
+use App\Livewire\Client\ClientDashboard as ClientDashboard;
+use App\Livewire\Client\ClientProgress as ClientProgress;
+use App\Livewire\Client\ClientPaymentHistory as ClientPaymentHistory;
+use App\Livewire\Client\ClientServices as ClientServices;
 
 // Rutas públicas (Tus nuevas rutas)
 Route::get('/', function () {
@@ -52,7 +56,7 @@ Route::middleware([
 });
 */
 
-//Rutas de administración mientras no hay base de datos
+// Rutas de administración mientras no hay base de datos
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/', AdminIndex::class)->name('dashboard');
     Route::get('/users', AdminUsers::class)->name('users.index');
@@ -71,12 +75,29 @@ Route::middleware([
     // Aquí irán las rutas de encargado
 });
 
-// Rutas de cliente
+// =====================================================================
+// RUTAS DE CLIENTE - SIN AUTENTICACIÓN (PARA TESTING TEMPORAL)
+// =====================================================================
+Route::prefix('/client')->name('client.')->group(function () {
+    Route::get('/dashboard', ClientDashboard::class)->name('dashboard');
+    Route::get('/progress', ClientProgress::class)->name('progress');
+    Route::get('/payment-history', ClientPaymentHistory::class)->name('payment-history');
+    Route::get('/services', ClientServices::class)->name('services');
+});
+
+// =====================================================================
+// RUTAS DE CLIENTE - CON AUTENTICACIÓN (COMENTADAS TEMPORALMENTE)
+// =====================================================================
+/*
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
     'role:cliente',
 ])->prefix('/client')->name('client.')->group(function () {
-    // Aquí irán las rutas de cliente
+    Route::get('/dashboard', ClientDashboard::class)->name('dashboard');
+    Route::get('/progress', ClientProgress::class)->name('progress');
+    Route::get('/payment-history', ClientPaymentHistory::class)->name('payment-history');
+    Route::get('/services', ClientServices::class)->name('services');
 });
+*/
