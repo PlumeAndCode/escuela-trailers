@@ -8,7 +8,7 @@
         <div class="flex justify-between items-center mb-6 gap-4 flex-wrap bg-white p-4 rounded-lg shadow-md">
             <div class="flex items-center gap-2">
                 <label class="font-semibold text-gray-900 text-base">Mostrar</label>
-                <select wire:model="perPage" class="border-2 border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 w-20 bg-white text-gray-900 text-base font-medium">
+                <select wire:change="$refresh" wire:model="perPage" class="border-2 border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 w-20 bg-white text-gray-900 text-base font-medium">
                     <option value="10">10</option>
                     <option value="25">25</option>
                     <option value="50">50</option>
@@ -19,7 +19,7 @@
 
             <div class="flex items-center gap-3 flex-wrap">
                 <label class="font-semibold whitespace-nowrap text-gray-900 text-base">Buscar:</label>
-                <input wire:model.debounce.300ms="search" 
+                <input wire:input="$refresh" wire:model="search" 
                     type="text" 
                     placeholder="Ingrese nombre o rol..." 
                     class="px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white text-gray-900 placeholder-gray-400 text-base w-80">

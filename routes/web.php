@@ -6,6 +6,11 @@ use App\Livewire\Admin\Users as AdminUsers;
 use App\Livewire\Admin\Pagos as AdminPagos;
 use App\Livewire\Admin\Reportes as AdminReportes;
 use App\Livewire\Admin\Control as AdminControl;
+use App\Livewire\Manager\Index as ManagerIndex;
+use App\Livewire\Manager\Lecciones as ManagerLecciones;
+use App\Livewire\Manager\Trailers as ManagerTrailers;
+use App\Livewire\Manager\Pagos as ManagerPagos;
+use App\Livewire\Manager\Reportes as ManagerReportes;
 
 // Rutas públicas (Tus nuevas rutas)
 Route::get('/', function () {
@@ -52,7 +57,7 @@ Route::middleware([
 });
 */
 
-//Rutas de administración mientras no hay base de datos
+//Rutas de administración mientras no hay conexión con la base de datos
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/', AdminIndex::class)->name('dashboard');
     Route::get('/users', AdminUsers::class)->name('users.index');
@@ -62,6 +67,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 // Rutas de gestión - Para encargados
+/*
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -69,6 +75,15 @@ Route::middleware([
     'role:encargado',
 ])->prefix('/manager')->name('manager.')->group(function () {
     // Aquí irán las rutas de encargado
+});
+*/
+
+//Rutas de encargado mientras no hay conexión con la base de datos
+Route::prefix('manager')->name('manager.')->group(function () {
+    Route::get('/', ManagerIndex::class)->name('dashboard');
+    Route::get('/lecciones', ManagerLecciones::class)->name('lecciones.index');
+    Route::get('/trailers', ManagerTrailers::class)->name('trailers.index');
+    Route::get('/reportes', ManagerReportes::class)->name('reportes.index');
 });
 
 // Rutas de cliente

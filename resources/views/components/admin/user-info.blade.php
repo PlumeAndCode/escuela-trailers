@@ -8,7 +8,17 @@
         <div>
             <div class="font-bold text-lg">{{ $user->nombre_completo ?? ($user->name ?? 'Usuario') }}</div>
             <div class="text-amber-100 text-sm">{{ $user->email ?? '' }}</div>
-            <div class="text-xs text-amber-50 mt-1 uppercase tracking-wide">{{ $user->rol ?? 'Usuario' }}</div>
+            <div class="text-xs text-amber-50 mt-1 uppercase tracking-wide">
+                @if($user->rol ?? null)
+                    {{ $user->rol }}
+                @elseif($user->roles ?? null)
+                    @foreach($user->roles as $role)
+                        {{ $role->name }}@if(!$loop->last), @endif
+                    @endforeach
+                @else
+                    Usuario
+                @endif
+            </div>
         </div>
     </div>
 </div>
