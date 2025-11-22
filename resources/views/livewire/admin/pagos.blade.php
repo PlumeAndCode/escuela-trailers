@@ -35,7 +35,7 @@
             <div class="flex justify-between items-center mb-6 gap-4 flex-wrap bg-white p-4 rounded-lg shadow-md">
                 <div class="flex items-center gap-2">
                     <label class="font-semibold text-gray-900 text-base">Mostrar</label>
-                    <select class="border-2 border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 w-20 bg-white text-gray-900 text-base font-medium">
+                    <select wire:change="$refresh" wire:model="perPage" class="border-2 border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 w-20 bg-white text-gray-900 text-base font-medium">
                         <option value="10">10</option>
                         <option value="25" selected>25</option>
                         <option value="50">50</option>
@@ -46,7 +46,7 @@
 
                 <div class="flex items-center gap-3 flex-wrap">
                     <label class="font-semibold whitespace-nowrap text-gray-900 text-base">Filtrar Estado:</label>
-                    <select class="border-2 border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white text-gray-900 text-base font-medium">
+                    <select wire:change="$refresh" wire:model="filtroEstado" class="border-2 border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white text-gray-900 text-base font-medium">
                         <option value="">Todos</option>
                         <option value="pagado">Pagados</option>
                         <option value="pendiente">Pendientes</option>
@@ -56,7 +56,8 @@
 
                 <div class="flex items-center gap-3 flex-wrap">
                     <label class="font-semibold whitespace-nowrap text-gray-900 text-base">Buscar:</label>
-                    <input type="text" 
+                    <input wire:input="$refresh" wire:model="search" 
+                        type="text" 
                         placeholder="Buscar por ID o usuario..." 
                         class="px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white text-gray-900 placeholder-gray-400 text-base w-80">
                 </div>
@@ -64,125 +65,62 @@
 
             <!-- Tabla de pagos -->
             <div class="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
-                <div class="overflow-x-auto">
-                    <table class="w-full border-collapse">
-                        <thead>
-                            <tr style="background-color: #1b3346;">
-                                <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-300">ID Pago</th>
-                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Usuario</th>
-                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Servicio</th>
-                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Monto</th>
-                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Tipo Pago</th>
-                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Estado</th>
-                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Fecha Pago</th>
-                                <th class="px-4 py-3 text-center font-bold text-white textbase">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white">
-                            <tr class="border-b border-gray-300 hover:bg-gray-50 transition-colors duration-200">
-                                <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">#0001</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Juan Pérez López</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Curso A1 Licencia</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">$450.00</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Tarjeta</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300"><span class="bg-emerald-600 text-white font-bold rounded px-4 py-2 inline-block text-sm">Pagado</span></td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">15/11/2024</td>
-                                <td class="px-4 py-3 text-center"><button class="font-bold rounded text-white text-sm py-2 px-5 transition-all duration-300" style="background-color: #2563EB;" onmouseover="this.style.boxShadow='0 0 20px rgba(37, 99, 235, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';" onmouseout="this.style.boxShadow='0 0 10px rgba(37, 99, 235, 0.4)'; this.style.transform='translateY(0) scale(1)';" onclick="abrirModalPago('0001', 'Juan Pérez López', 'Curso A1 Licencia', '450.00', 'Tarjeta', 'pagado', '15/11/2024')">Editar</button></td>
-                            </tr>
-                            <tr class="border-b border-gray-300 hover:bg-gray-50 transition-colors duration-200">
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">#0002</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">María García Rodríguez</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Curso B Transporte</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">$650.00</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Efectivo</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300"><span class="bg-emerald-600 text-white font-bold rounded px-4 py-2 inline-block text-sm">Pagado</span></td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">14/11/2024</td>
-                                <td class="px-4 py-3 text-center"><button class="font-bold rounded text-white text-sm py-2 px-5 transition-all duration-300" style="background-color: #2563EB;" onmouseover="this.style.boxShadow='0 0 20px rgba(37, 99, 235, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';" onmouseout="this.style.boxShadow='0 0 10px rgba(37, 99, 235, 0.4)'; this.style.transform='translateY(0) scale(1)';" onclick="abrirModalPago('0002', 'María García Rodríguez', 'Curso B Transporte', '650.00', 'Efectivo', 'pagado', '14/11/2024')">Editar</button></td>
-                            </tr>
-                            <tr class="border-b border-gray-300 hover:bg-gray-50 transition-colors duration-200">
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">#0003</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Carlos Martínez Díaz</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Certificación Remolques</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">$550.00</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Línea</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300"><span class="bg-orange-500 text-white font-bold rounded px-4 py-2 inline-block text-sm">Pendiente</span></td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">20/11/2024</td>
-                                <td class="px-4 py-3 text-center"><button class="font-bold rounded text-white text-sm py-2 px-5 transition-all duration-300" style="background-color: #2563EB;" onmouseover="this.style.boxShadow='0 0 20px rgba(37, 99, 235, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';" onmouseout="this.style.boxShadow='0 0 10px rgba(37, 99, 235, 0.4)'; this.style.transform='translateY(0) scale(1)';" onclick="abrirModalPago('0003', 'Carlos Martínez Díaz', 'Certificación Remolques', '550.00', 'Línea', 'pendiente', '20/11/2024')">Editar</button></td>
-                            </tr>
-                            <tr class="border-b border-gray-300 hover:bg-gray-50 transition-colors duration-200">
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">#0004</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Ana López Fernández</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Mantenimiento Preventivo</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">$300.00</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Tarjeta</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300"><span class="bg-red-600 text-white font-bold rounded px-4 py-2 inline-block text-sm">Vencido</span></td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">10/11/2024</td>
-                                <td class="px-4 py-3 text-center"><button class="font-bold rounded text-white text-sm py-2 px-5 transition-all duration-300" style="background-color: #2563EB;" onmouseover="this.style.boxShadow='0 0 20px rgba(37, 99, 235, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';" onmouseout="this.style.boxShadow='0 0 10px rgba(37, 99, 235, 0.4)'; this.style.transform='translateY(0) scale(1)';" onclick="abrirModalPago('0004', 'Ana López Fernández', 'Mantenimiento Preventivo', '300.00', 'Tarjeta', 'vencido', '10/11/2024')">Editar</button></td>
-                            </tr>
-                            <tr class="border-b border-gray-300 hover:bg-gray-50 transition-colors duration-200">
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">#0005</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Roberto Sánchez Gómez</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Capacitación Avanzada</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">$400.00</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Efectivo</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300"><span class="bg-emerald-600 text-white font-bold rounded px-4 py-2 inline-block text-sm">Pagado</span></td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">13/11/2024</td>
-                                <td class="px-4 py-3 text-center"><button class="font-bold rounded text-white text-sm py-2 px-5 transition-all duration-300" style="background-color: #2563EB;" onmouseover="this.style.boxShadow='0 0 20px rgba(37, 99, 235, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';" onmouseout="this.style.boxShadow='0 0 10px rgba(37, 99, 235, 0.4)'; this.style.transform='translateY(0) scale(1)';" onclick="abrirModalPago('0005', 'Roberto Sánchez Gómez', 'Capacitación Avanzada', '400.00', 'Efectivo', 'pagado', '13/11/2024')">Editar</button></td>
-                            </tr>
-                            <tr class="border-b border-gray-300 hover:bg-gray-50 transition-colors duration-200">
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">#0006</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Laura Jiménez Ruiz</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Curso A1 Licencia</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">$450.00</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Tarjeta</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300"><span class="bg-orange-500 text-white font-bold rounded px-4 py-2 inline-block text-sm">Pendiente</span></td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">25/11/2024</td>
-                                <td class="px-4 py-3 text-center"><button class="font-bold rounded text-white text-sm py-2 px-5 transition-all duration-300" style="background-color: #2563EB;" onmouseover="this.style.boxShadow='0 0 20px rgba(37, 99, 235, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';" onmouseout="this.style.boxShadow='0 0 10px rgba(37, 99, 235, 0.4)'; this.style.transform='translateY(0) scale(1)';" onclick="abrirModalPago('0006', 'Laura Jiménez Ruiz', 'Curso A1 Licencia', '450.00', 'Tarjeta', 'pendiente', '25/11/2024')">Editar</button></td>
-                            </tr>
-                            <tr class="border-b border-gray-300 hover:bg-gray-50 transition-colors duration-200">
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">#0007</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">José Luis Moreno Torres</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Curso B Transporte</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">$650.00</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Línea</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300"><span class="bg-emerald-600 text-white font-bold rounded px-4 py-2 inline-block text-sm">Pagado</span></td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">12/11/2024</td>
-                                <td class="px-4 py-3 text-center"><button class="font-bold rounded text-white text-sm py-2 px-5 transition-all duration-300" style="background-color: #2563EB;" onmouseover="this.style.boxShadow='0 0 20px rgba(37, 99, 235, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';" onmouseout="this.style.boxShadow='0 0 10px rgba(37, 99, 235, 0.4)'; this.style.transform='translateY(0) scale(1)';" onclick="abrirModalPago('0007', 'José Luis Moreno Torres', 'Curso B Transporte', '650.00', 'Línea', 'pagado', '12/11/2024')">Editar</button></td>
-                            </tr>
-                            <tr class="border-b border-gray-300 hover:bg-gray-50 transition-colors duration-200">
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">#0008</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Elena Rodríguez Castro</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Certificación Remolques</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">$550.00</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Efectivo</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300"><span class="bg-red-600 text-white font-bold rounded px-4 py-2 inline-block text-sm">Vencido</span></td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">05/11/2024</td>
-                                <td class="px-4 py-3 text-center"><button class="font-bold rounded text-white text-sm py-2 px-5 transition-all duration-300" style="background-color: #2563EB;" onmouseover="this.style.boxShadow='0 0 20px rgba(37, 99, 235, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';" onmouseout="this.style.boxShadow='0 0 10px rgba(37, 99, 235, 0.4)'; this.style.transform='translateY(0) scale(1)';" onclick="abrirModalPago('0008', 'Elena Rodríguez Castro', 'Certificación Remolques', '550.00', 'Efectivo', 'vencido', '05/11/2024')">Editar</button></td>
-                            </tr>
-                            <tr class="border-b border-gray-300 hover:bg-gray-50 transition-colors duration-200">
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">#0009</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Miguel Hernández López</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Mantenimiento Preventivo</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">$300.00</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Tarjeta</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300"><span class="bg-emerald-600 text-white font-bold rounded px-4 py-2 inline-block text-sm">Pagado</span></td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">16/11/2024</td>
-                                <td class="px-4 py-3 text-center"><button class="font-bold rounded text-white text-sm py-2 px-5 transition-all duration-300" style="background-color: #2563EB;" onmouseover="this.style.boxShadow='0 0 20px rgba(37, 99, 235, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';" onmouseout="this.style.boxShadow='0 0 10px rgba(37, 99, 235, 0.4)'; this.style.transform='translateY(0) scale(1)';" onclick="abrirModalPago('0009', 'Miguel Hernández López', 'Mantenimiento Preventivo', '300.00', 'Tarjeta', 'pagado', '16/11/2024')">Editar</button></td>
-                            </tr>
-                            <tr class="border-b border-gray-300 hover:bg-gray-50 transition-colors duration-200">
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">#0010</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Patricia Gómez Velasco</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Capacitación Avanzada</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">$400.00</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">Línea</td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300"><span class="bg-orange-500 text-white font-bold rounded px-4 py-2 inline-block text-sm">Pendiente</span></td>
-                                <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">22/11/2024</td>
-                                <td class="px-4 py-3 text-center"><button class="font-bold rounded text-white text-sm py-2 px-5 transition-all duration-300" style="background-color: #2563EB;" onmouseover="this.style.boxShadow='0 0 20px rgba(37, 99, 235, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';" onmouseout="this.style.boxShadow='0 0 10px rgba(37, 99, 235, 0.4)'; this.style.transform='translateY(0) scale(1)';" onclick="abrirModalPago('0010', 'Patricia Gómez Velasco', 'Capacitación Avanzada', '400.00', 'Línea', 'pendiente', '22/11/2024')">Editar</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                @if($pagos->isEmpty())
+                    <div class="p-12 text-center bg-white">
+                        <p class="text-gray-500 text-base font-medium">No hay pagos disponibles</p>
+                    </div>
+                @else
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse">
+                            <thead>
+                                <tr style="background-color: #1b3346;">
+                                    <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-300">ID Pago</th>
+                                    <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Usuario</th>
+                                    <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Servicio</th>
+                                    <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Monto</th>
+                                    <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Tipo Pago</th>
+                                    <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Estado</th>
+                                    <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Fecha Pago</th>
+                                    <th class="px-4 py-3 text-center font-bold text-white textbase">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white">
+                                @foreach($pagos as $index => $pago)
+                                    <tr class="border-b border-gray-300 hover:bg-gray-50 transition-colors duration-200">
+                                        <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">{{ $pago->id_pago }}</td>
+                                        <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">{{ $pago->usuario ?? 'N/A' }}</td>
+                                        <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $pago->servicio ?? 'N/A' }}</td>
+                                        <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">${{ number_format($pago->monto, 2) }}</td>
+                                        <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $pago->tipo_pago ?? 'N/A' }}</td>
+                                        <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">
+                                            <span class="font-semibold rounded px-4 py-2 text-sm inline-block" 
+                                                style="@if($pago->estado === 'pagado') background-color: #10b981; color: #ffffff; @elseif($pago->estado === 'pendiente') background-color: #f59e0b; color: #ffffff; @elseif($pago->estado === 'vencido') background-color: #ef4444; color: #ffffff; @endif">
+                                                {{ ucfirst($pago->estado ?? 'N/A') }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $pago->fecha_pago ?? 'N/A' }}</td>
+                                        <td class="px-4 py-3 text-center">
+                                            <button class="font-bold rounded text-white text-sm py-2 px-5 transition-all duration-300" 
+                                                style="background-color: #2563EB;"
+                                                onmouseover="this.style.boxShadow='0 0 20px rgba(37, 99, 235, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';"
+                                                onmouseout="this.style.boxShadow='0 0 10px rgba(37, 99, 235, 0.4)'; this.style.transform='translateY(0) scale(1)';"
+                                                onclick="abrirModalPago('{{ $pago->id_pago }}', '{{ $pago->usuario ?? '' }}', '{{ $pago->servicio ?? '' }}', '{{ $pago->monto ?? 0 }}', '{{ $pago->tipo_pago ?? '' }}', '{{ $pago->estado ?? '' }}', '{{ $pago->fecha_pago ?? '' }}')">
+                                                Editar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
             </div>
+
+            @if(!$pagos->isEmpty())
+                <div class="mt-6 flex justify-center">
+                    {{ $pagos->links() }}
+                </div>
+            @endif
         </div>
 
         <!-- TAB: Ganancias por Servicio -->
