@@ -1,4 +1,50 @@
-<div>
+<div
+    x-data="{ 
+        toasts: [],
+        addToast(toast) {
+            const id = Date.now();
+            this.toasts.push({ id, ...toast });
+            setTimeout(() => this.removeToast(id), 4000);
+        },
+        removeToast(id) {
+            this.toasts = this.toasts.filter(t => t.id !== id);
+        }
+    }"
+    @toast.window="addToast($event.detail)"
+>
+    <!-- Toast Notifications -->
+    <div class="fixed top-5 right-5 z-50 space-y-2">
+        <template x-for="toast in toasts" :key="toast.id">
+            <div 
+                x-show="true"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 transform translate-x-full"
+                x-transition:enter-end="opacity-100 transform translate-x-0"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                :class="{
+                    'bg-green-500': toast.type === 'success',
+                    'bg-red-500': toast.type === 'error',
+                    'bg-amber-500': toast.type === 'warning',
+                    'bg-blue-500': toast.type === 'info'
+                }"
+                class="text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3"
+            >
+                <template x-if="toast.type === 'success'">
+                    <i class="fas fa-check-circle"></i>
+                </template>
+                <template x-if="toast.type === 'error'">
+                    <i class="fas fa-exclamation-circle"></i>
+                </template>
+                <span x-text="toast.message"></span>
+                <button @click="removeToast(toast.id)" class="ml-2 hover:opacity-75">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </template>
+    </div>
+
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
         <div class="mb-8">
@@ -12,10 +58,35 @@
                 <h3 class="text-2xl font-bold text-gray-800">Servicios contratados</h3>
                 <p class="text-gray-600 mt-2">Aquí puedes ver tus servicios activos y próximos pagos o vencimientos</p>
             </div>
-            <button onclick="openAddServiceModal()" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center">
+            <button wire:click="openAddModal" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center">
                 <i class="fas fa-plus mr-2"></i>
                 Añadir Servicios
             </button>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <input 
+                        type="text" 
+                        wire:model.live.debounce.300ms="search"
+                        placeholder="Buscar por nombre de servicio..."
+                        class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-amber-500"
+                    >
+                </div>
+                <div>
+                    <select 
+                        wire:model.live="filtroEstado"
+                        class="px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-amber-500"
+                    >
+                        <option value="">Todos los estados</option>
+                        <option value="activo">Activos</option>
+                        <option value="cancelado">Cancelados</option>
+                        <option value="completado">Completados</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
         <!-- Services Table -->
@@ -26,64 +97,70 @@
                         <th class="w-[8%] py-3 px-4 text-center font-semibold">ID</th>
                         <th class="w-[27%] py-3 px-4 text-center font-semibold">SERVICIO</th>
                         <th class="w-[15%] py-3 px-4 text-center font-semibold">FECHA INICIO</th>
-                        <th class="w-[15%] py-3 px-4 text-center font-semibold">VENCIMIENTO</th>
+                        <th class="w-[15%] py-3 px-4 text-center font-semibold">ESTADO</th>
                         <th class="w-[15%] py-3 px-4 text-center font-semibold">PRÓXIMO PAGO</th>
                         <th class="w-[20%] py-3 px-4 text-center font-semibold">ACCIONES</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Service 1 -->
+                    @forelse($contrataciones as $index => $contratacion)
                     <tr class="border-b border-gray-200 hover:bg-gray-50">
-                        <td class="py-4 px-4 text-center font-semibold">001</td>
+                        <td class="py-4 px-4 text-center font-semibold">{{ str_pad($index + 1, 3, '0', STR_PAD_LEFT) }}</td>
                         <td class="py-4 px-4 text-center">
-                            <div class="font-semibold">Conductor Designado</div>
-                            <div class="text-sm text-gray-600">Curso completo para obtener licencia</div>
+                            <div class="font-semibold">{{ $contratacion->servicio->nombre_servicio ?? 'N/A' }}</div>
+                            <div class="text-sm text-gray-600">{{ Str::limit($contratacion->servicio->descripcion ?? '', 50) }}</div>
                         </td>
-                        <td class="py-4 px-4 text-center">17/09/2025</td>
-                        <td class="py-4 px-4 text-center">17/10/2025</td>
+                        <td class="py-4 px-4 text-center">{{ $contratacion->fecha_contratacion->format('d/m/Y') }}</td>
                         <td class="py-4 px-4 text-center">
-                            <span class="text-amber-600 font-semibold">-</span>
+                            @if($contratacion->estado_contratacion === 'activo')
+                                <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">Activo</span>
+                            @elseif($contratacion->estado_contratacion === 'cancelado')
+                                <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">Cancelado</span>
+                            @else
+                                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">{{ ucfirst($contratacion->estado_contratacion) }}</span>
+                            @endif
                         </td>
                         <td class="py-4 px-4 text-center">
-                            <button class="text-red-600 hover:text-red-800 font-semibold text-sm">
-                                Anular Servicio
+                            @if($contratacion->pagos->first())
+                                <span class="text-amber-600 font-semibold">{{ $contratacion->pagos->first()->fecha_pago->format('d/m/Y') }}</span>
+                            @else
+                                <span class="text-gray-400">-</span>
+                            @endif
+                        </td>
+                        <td class="py-4 px-4 text-center">
+                            @if($contratacion->estado_contratacion === 'activo')
+                                <button 
+                                    wire:click="confirmarCancelacion('{{ $contratacion->id }}')"
+                                    class="text-red-600 hover:text-red-800 font-semibold text-sm"
+                                >
+                                    Anular Servicio
+                                </button>
+                            @else
+                                <span class="text-gray-400">-</span>
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="py-8 text-center text-gray-500">
+                            <i class="fas fa-inbox text-4xl mb-3"></i>
+                            <p>No tienes servicios contratados</p>
+                            <button wire:click="openAddModal" class="mt-3 text-amber-600 hover:text-amber-700 font-semibold">
+                                Contratar un servicio
                             </button>
                         </td>
                     </tr>
-
-                    <!-- Service 2 -->
-                    <tr class="border-b border-gray-200 hover:bg-gray-50">
-                        <td class="py-4 px-4 text-center font-semibold">002</td>
-                        <td class="py-4 px-4 text-center">
-                            <div class="font-semibold">Clase de Conducción</div>
-                            <div class="text-sm text-gray-600">Lecciones individuales de manejo</div>
-                        </td>
-                        <td class="py-4 px-4 text-center">20/06/2025</td>
-                        <td class="py-4 px-4 text-center">05/10/2025</td>
-                        <td class="py-4 px-4 text-center">
-                            <span class="text-amber-600 font-semibold">11/10/2025</span>
-                        </td>
-                        <td class="py-4 px-4 text-center">
-                            <button class="text-red-600 hover:text-red-800 font-semibold text-sm">
-                                Anular Servicio
-                            </button>
-                        </td>
-                    </tr>
-
-                    <!-- Empty Rows -->
-                    @for($i = 3; $i <= 6; $i++)
-                    <tr class="border-b border-gray-200">
-                        <td class="py-4 px-4 text-center text-gray-400">00{{ $i }}</td>
-                        <td class="py-4 px-4 text-center text-gray-400">-</td>
-                        <td class="py-4 px-4 text-center text-gray-400">-</td>
-                        <td class="py-4 px-4 text-center text-gray-400">-</td>
-                        <td class="py-4 px-4 text-center text-gray-400">-</td>
-                        <td class="py-4 px-4 text-center text-gray-400">-</td>
-                    </tr>
-                    @endfor
+                    @endforelse
                 </tbody>
             </table>
         </div>
+
+        <!-- Pagination -->
+        @if($contrataciones->hasPages())
+        <div class="mb-6">
+            {{ $contrataciones->links() }}
+        </div>
+        @endif
 
         <!-- Additional Services Info -->
         <div class="bg-amber-50 border border-amber-200 rounded-lg p-6">
@@ -110,10 +187,11 @@
     </div>
 
     <!-- Add Service Modal -->
-    <div id="addServiceModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-[1000] items-center justify-center p-5">
+    @if($showAddModal)
+    <div class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[1000] flex items-center justify-center p-5">
         <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl p-8 max-w-2xl w-full relative shadow-2xl border border-gray-100">
             <!-- Close Button -->
-            <button onclick="closeAddServiceModal()" class="absolute right-5 top-4 text-2xl text-gray-600 hover:text-amber-600 transition-colors">
+            <button wire:click="closeAddModal" class="absolute right-5 top-4 text-2xl text-gray-600 hover:text-amber-600 transition-colors">
                 &times;
             </button>
             
@@ -123,131 +201,86 @@
                 
                 <!-- Services List -->
                 <div class="space-y-4 max-h-96 overflow-y-auto mb-6">
-                    <!-- Service 1 -->
-                    <div class="bg-white border border-gray-200 rounded-xl p-4 hover:border-amber-300 transition-all">
+                    @forelse($serviciosDisponibles as $servicio)
+                    <div class="bg-white border border-gray-200 rounded-xl p-4 hover:border-amber-300 transition-all {{ $servicioSeleccionado && $servicioSeleccionado->id === $servicio->id ? 'border-amber-500 bg-amber-50' : '' }}">
                         <div class="flex justify-between items-center">
                             <div>
-                                <h4 class="font-semibold text-gray-800">Lección 3: Manejo Defensivo</h4>
-                                <p class="text-gray-600 text-sm mt-1">Técnicas de conducción preventiva y seguridad vial</p>
-                                <p class="text-amber-600 font-bold mt-2">$300.00</p>
+                                <h4 class="font-semibold text-gray-800">{{ $servicio->nombre_servicio }}</h4>
+                                <p class="text-gray-600 text-sm mt-1">{{ Str::limit($servicio->descripcion, 60) }}</p>
+                                <p class="text-amber-600 font-bold mt-2">${{ number_format($servicio->precio, 2) }}</p>
                             </div>
-                            <button onclick="selectService('Lección 3: Manejo Defensivo', 300)" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
-                                Seleccionar
+                            <button 
+                                wire:click="seleccionarServicio('{{ $servicio->id }}')"
+                                class="{{ $servicioSeleccionado && $servicioSeleccionado->id === $servicio->id ? 'bg-green-500 hover:bg-green-600' : 'bg-amber-500 hover:bg-amber-600' }} text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+                            >
+                                {{ $servicioSeleccionado && $servicioSeleccionado->id === $servicio->id ? '✓ Seleccionado' : 'Seleccionar' }}
                             </button>
                         </div>
                     </div>
-
-                    <!-- Service 2 -->
-                    <div class="bg-white border border-gray-200 rounded-xl p-4 hover:border-amber-300 transition-all">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h4 class="font-semibold text-gray-800">Lección 4: Estacionamiento</h4>
-                                <p class="text-gray-600 text-sm mt-1">Técnicas de estacionamiento en diferentes escenarios</p>
-                                <p class="text-amber-600 font-bold mt-2">$280.00</p>
-                            </div>
-                            <button onclick="selectService('Lección 4: Estacionamiento', 280)" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
-                                Seleccionar
-                            </button>
-                        </div>
+                    @empty
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-box-open text-4xl mb-3"></i>
+                        <p>No hay servicios disponibles en este momento</p>
                     </div>
-
-                    <!-- Service 3 -->
-                    <div class="bg-white border border-gray-200 rounded-xl p-4 hover:border-amber-300 transition-all">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h4 class="font-semibold text-gray-800">Renta de Tráiler - 4 horas</h4>
-                                <p class="text-gray-600 text-sm mt-1">Práctica con vehículo pesado con instructor</p>
-                                <p class="text-amber-600 font-bold mt-2">$500.00</p>
-                            </div>
-                            <button onclick="selectService('Renta de Tráiler - 4 horas', 500)" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
-                                Seleccionar
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Service 4 -->
-                    <div class="bg-white border border-gray-200 rounded-xl p-4 hover:border-amber-300 transition-all">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h4 class="font-semibold text-gray-800">Trámite de Licencia</h4>
-                                <p class="text-gray-600 text-sm mt-1">Gestión completa para obtención de licencia</p>
-                                <p class="text-amber-600 font-bold mt-2">$150.00</p>
-                            </div>
-                            <button onclick="selectService('Trámite de Licencia', 150)" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
-                                Seleccionar
-                            </button>
-                        </div>
-                    </div>
+                    @endforelse
                 </div>
 
                 <!-- Selected Service -->
-                <div id="selectedService" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+                @if($servicioSeleccionado)
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
                     <h4 class="font-semibold text-amber-800 mb-2">Servicio Seleccionado:</h4>
                     <div class="flex justify-between items-center">
                         <div>
-                            <span id="serviceName" class="font-semibold"></span>
-                            <span id="servicePrice" class="text-amber-600 font-bold ml-4"></span>
+                            <span class="font-semibold">{{ $servicioSeleccionado->nombre_servicio }}</span>
+                            <span class="text-amber-600 font-bold ml-4">${{ number_format($servicioSeleccionado->precio, 2) }}</span>
                         </div>
-                        <button onclick="addToPayments()" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
-                            Añadir a Pagos
+                        <button 
+                            wire:click="contratar"
+                            wire:loading.attr="disabled"
+                            class="bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+                        >
+                            <span wire:loading.remove wire:target="contratar">Contratar Servicio</span>
+                            <span wire:loading wire:target="contratar">Procesando...</span>
                         </button>
                     </div>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <!-- Confirm Cancel Modal -->
+    @if($showConfirmModal)
+    <div class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[1000] flex items-center justify-center p-5">
+        <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl p-8 max-w-md w-full relative shadow-2xl border border-gray-100">
+            <div class="flex flex-col items-center text-center">
+                <!-- Warning Icon -->
+                <div class="w-16 h-16 bg-red-500 text-white rounded-full flex items-center justify-center text-2xl mb-4">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                
+                <h2 class="text-gray-900 text-xl font-bold mb-2">¿Cancelar Servicio?</h2>
+                <p class="text-gray-600 mb-6">Esta acción no se puede deshacer. ¿Estás seguro de que deseas anular este servicio?</p>
+
+                <div class="flex gap-4 w-full">
+                    <button 
+                        wire:click="cerrarConfirmModal"
+                        class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-lg font-semibold transition-colors"
+                    >
+                        No, Mantener
+                    </button>
+                    <button 
+                        wire:click="cancelarServicio"
+                        wire:loading.attr="disabled"
+                        class="flex-1 bg-red-500 hover:bg-red-600 disabled:bg-gray-400 text-white py-3 rounded-lg font-semibold transition-colors"
+                    >
+                        <span wire:loading.remove wire:target="cancelarServicio">Sí, Cancelar</span>
+                        <span wire:loading wire:target="cancelarServicio">Cancelando...</span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+    @endif
 </div>
-
-<script>
-let selectedService = null;
-let selectedPrice = null;
-
-function openAddServiceModal() {
-    document.getElementById('addServiceModal').classList.remove('hidden');
-    document.getElementById('addServiceModal').classList.add('flex');
-}
-
-function closeAddServiceModal() {
-    document.getElementById('addServiceModal').classList.add('hidden');
-    document.getElementById('addServiceModal').classList.remove('flex');
-    resetSelection();
-}
-
-function selectService(serviceName, price) {
-    selectedService = serviceName;
-    selectedPrice = price;
-    
-    document.getElementById('serviceName').textContent = serviceName;
-    document.getElementById('servicePrice').textContent = '$' + price.toFixed(2);
-    document.getElementById('selectedService').classList.remove('hidden');
-}
-
-function resetSelection() {
-    selectedService = null;
-    selectedPrice = null;
-    document.getElementById('selectedService').classList.add('hidden');
-}
-
-function addToPayments() {
-    if (selectedService && selectedPrice) {
-        closeAddServiceModal();
-        
-        const newService = {
-            name: selectedService,
-            price: selectedPrice,
-            id: Date.now(),
-            date: new Date().toLocaleDateString('es-MX')
-        };
-        
-        sessionStorage.setItem('newService', JSON.stringify(newService));
-        window.location.href = "{{ route('client.payment-history') }}";
-    }
-}
-
-window.addEventListener('click', (e) => {
-    const modal = document.getElementById('addServiceModal');
-    if (e.target === modal) {
-        closeAddServiceModal();
-    }
-});
-</script>
