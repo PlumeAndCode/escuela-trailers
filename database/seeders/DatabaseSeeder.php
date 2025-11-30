@@ -3,13 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
@@ -18,65 +16,55 @@ class DatabaseSeeder extends Seeder
         // Seed roles and permissions first
         $this->call(RoleAndPermissionSeeder::class);
 
-        // Create an admin user
-        $adminUser = User::factory()->create([
+        // Usuario Admin - Credenciales de prueba
+        $adminUser = User::create([
             'nombre_completo' => 'Administrador',
             'email' => 'admin@escuela-trailers.com',
+            'telefono' => '4431234567',
+            'password' => Hash::make('password123'),
             'rol' => 'administrador',
             'estado_usuario' => true,
+            'email_verified_at' => now(),
         ]);
         $adminUser->assignRole('administrador');
 
-        // Create a manager user
-        $managerUser = User::factory()->create([
-            'nombre_completo' => 'Encargado',
+        // Usuario Encargado - Credenciales de prueba
+        $managerUser = User::create([
+            'nombre_completo' => 'Juan Encargado',
             'email' => 'manager@escuela-trailers.com',
+            'telefono' => '4431234568',
+            'password' => Hash::make('password123'),
             'rol' => 'encargado',
             'estado_usuario' => true,
+            'email_verified_at' => now(),
         ]);
         $managerUser->assignRole('encargado');
 
-        // Create a client user
-        $clientUser = User::factory()->create([
-            'nombre_completo' => 'Cliente',
-            'email' => 'client@escuela-trailers.com',
+        // Usuario Cliente - Credenciales de prueba
+        $clientUser = User::create([
+            'nombre_completo' => 'Carlos Cliente',
+            'email' => 'cliente@escuela-trailers.com',
+            'telefono' => '4431234569',
+            'password' => Hash::make('password123'),
             'rol' => 'cliente',
             'estado_usuario' => true,
+            'email_verified_at' => now(),
         ]);
         $clientUser->assignRole('cliente');
 
-        // Seed additional users for testing
-        User::factory(5)->create()->each(function ($user) {
-            $user->assignRole('cliente');
-        });
-
-        // Seed servicios y trailers (tablas independientes)
+        // Seed additional data
         $this->call([
             ServiciosSeeder::class,
             TrailersSeeder::class,
-        ]);
-
-        // Seed contrataciones (depende de users y servicios)
-        $this->call(ContratacionesSeeder::class);
-
-        // Seed cursos y lecciones (dependen de contrataciones)
-        $this->call([
+            ContratacionesSeeder::class,
             CursosSeeder::class,
             LeccionesSeeder::class,
             AvanceLeccionSeeder::class,
+            LeccionesIndividualesSeeder::class,
+            TramitesLicenciaSeeder::class,
+            RentasTrailerSeeder::class,
+            PagosSeeder::class,
         ]);
-
-        // Seed lecciones individuales (dependen de contrataciones)
-        $this->call(LeccionesIndividualesSeeder::class);
-
-        // Seed trámites de licencia (dependen de contrataciones)
-        $this->call(TramitesLicenciaSeeder::class);
-
-        // Seed rentas de tráiler (dependen de contrataciones y trailers)
-        $this->call(RentasTrailerSeeder::class);
-
-        // Seed pagos (dependen de contrataciones)
-        $this->call(PagosSeeder::class);
     }
 }
 

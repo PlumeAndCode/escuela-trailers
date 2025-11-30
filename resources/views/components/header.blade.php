@@ -33,10 +33,27 @@
             </li>
         </ul>
         
-        <!-- Login Button -->
-        <button id="openLoginModal" class="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-2.5 rounded-full font-semibold transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-amber-500/40">
-            Iniciar Sesión
-        </button>
+        <!-- Auth Buttons -->
+        @auth
+            <div class="flex items-center gap-4">
+                <!-- Dashboard Link -->
+                <a href="{{ auth()->user()->getDashboardPath() }}" class="text-gray-900 font-semibold hover:text-amber-500 transition-colors">
+                    {{ auth()->user()->nombre_completo }}
+                </a>
+                <!-- Logout Button -->
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="bg-gradient-to-r from-gray-600 to-gray-700 text-white px-6 py-2.5 rounded-full font-semibold transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-gray-500/40">
+                        Cerrar Sesión
+                    </button>
+                </form>
+            </div>
+        @else
+            <!-- Login Button -->
+            <button id="openLoginModal" class="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-2.5 rounded-full font-semibold transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-amber-500/40">
+                Iniciar Sesión
+            </button>
+        @endauth
         
         <!-- Mobile Menu Button -->
         <button class="md:hidden text-2xl text-gray-900">

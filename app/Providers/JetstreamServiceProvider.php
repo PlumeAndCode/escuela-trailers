@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Actions\Jetstream\DeleteUser;
+use App\Http\Responses\LoginResponse;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 use Laravel\Jetstream\Jetstream;
 
 class JetstreamServiceProvider extends ServiceProvider
@@ -14,7 +16,8 @@ class JetstreamServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Registrar respuesta de login personalizada para redirección por rol
+        $this->app->singleton(LoginResponseContract::class, LoginResponse::class);
     }
 
     /**
