@@ -59,7 +59,7 @@
                         <input type="checkbox" name="remember" class="rounded border-gray-300">
                         Recordarme
                     </label>
-                    <a href="{{ route('password.request') }}" class="text-amber-600 hover:underline">¿Olvidaste tu contraseña?</a>
+                    <button type="button" id="switchToForgotPassword" class="text-amber-600 hover:underline">¿Olvidaste tu contraseña?</button>
                 </div>
                 
                 <!-- Submit Button -->
@@ -265,15 +265,99 @@
 @endif
 @endauth
 
+<!-- Forgot Password Modal -->
+<div id="forgotPasswordModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-[1000] items-center justify-center p-5">
+    <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl p-10 max-w-md w-full relative shadow-2xl border border-gray-100 animate-slideIn">
+        <!-- Close Button -->
+        <button id="closeForgotPasswordModal" class="absolute right-5 top-4 text-2xl text-gray-600 hover:text-amber-600 transition-colors">
+            &times;
+        </button>
+        
+        <div class="flex flex-col items-center">
+            <!-- Icon -->
+            <div class="w-20 h-20 bg-blue-500 text-white rounded-full flex items-center justify-center text-3xl mb-5">
+                <i class="fas fa-unlock-alt"></i>
+            </div>
+            
+            <!-- Title -->
+            <h2 class="text-gray-900 text-2xl font-bold mb-4">Recuperar Contraseña</h2>
+            
+            <!-- Message -->
+            <p class="text-gray-600 text-center mb-6">
+                ¿Olvidaste tu contraseña? No hay problema. Solo indícanos tu correo electrónico y te enviaremos un enlace para restablecerla.
+            </p>
+            
+            <!-- Success Message -->
+            @if (session('status'))
+                <div class="w-full mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl text-sm text-center">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    {{ session('status') }}
+                </div>
+            @endif
+            
+            <!-- Error Messages -->
+            @if($errors->has('email') && !$errors->has('password') && !$errors->has('nombre_completo'))
+                <div class="w-full mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl text-sm">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    @foreach ($errors->all() as $error)
+                        {{ $error }}<br>
+                    @endforeach
+                </div>
+            @endif
+            
+            <!-- Form -->
+            <form class="w-full" method="POST" action="{{ route('password.email') }}">
+                @csrf
+                
+                <!-- Email Input -->
+                <div class="relative mb-6 w-full">
+                    <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                    <input 
+                        type="email" 
+                        name="email"
+                        value="{{ old('email') }}"
+                        placeholder="Correo electrónico" 
+                        required
+                        autofocus
+                        autocomplete="username"
+                        class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:border-amber-600 focus:bg-white transition-all"
+                    >
+                </div>
+                
+                <!-- Submit Button -->
+                <button 
+                    type="submit" 
+                    class="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-full py-3 font-semibold shadow-lg shadow-amber-500/30 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-amber-500/50 transition-all"
+                >
+                    <i class="fas fa-paper-plane mr-2"></i>
+                    Enviar Enlace de Recuperación
+                </button>
+            </form>
+            
+            <!-- Back to Login Link -->
+            <div class="mt-6 text-center text-gray-600">
+                <button type="button" id="switchToLoginFromForgot" class="text-amber-600 font-semibold hover:underline">
+                    <i class="fas fa-arrow-left mr-1"></i>
+                    Volver al inicio de sesión
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script>
     const loginModal = document.getElementById('loginModal');
     const registerModal = document.getElementById('registerModal');
+    const forgotPasswordModal = document.getElementById('forgotPasswordModal');
     const openLoginBtn = document.getElementById('openLoginModal');
     const closeLoginBtn = document.getElementById('closeLoginModal');
     const closeRegisterBtn = document.getElementById('closeRegisterModal');
+    const closeForgotPasswordBtn = document.getElementById('closeForgotPasswordModal');
     const switchToRegisterBtn = document.getElementById('switchToRegister');
     const switchToLoginBtn = document.getElementById('switchToLogin');
+    const switchToForgotPasswordBtn = document.getElementById('switchToForgotPassword');
+    const switchToLoginFromForgotBtn = document.getElementById('switchToLoginFromForgot');
 
     // Open Login Modal
     openLoginBtn?.addEventListener('click', () => {
@@ -293,6 +377,12 @@
         registerModal.classList.remove('flex');
     });
 
+    // Close Forgot Password Modal
+    closeForgotPasswordBtn?.addEventListener('click', () => {
+        forgotPasswordModal.classList.add('hidden');
+        forgotPasswordModal.classList.remove('flex');
+    });
+
     // Switch to Register Modal
     switchToRegisterBtn?.addEventListener('click', () => {
         loginModal.classList.add('hidden');
@@ -309,6 +399,22 @@
         loginModal.classList.add('flex');
     });
 
+    // Switch to Forgot Password Modal
+    switchToForgotPasswordBtn?.addEventListener('click', () => {
+        loginModal.classList.add('hidden');
+        loginModal.classList.remove('flex');
+        forgotPasswordModal.classList.remove('hidden');
+        forgotPasswordModal.classList.add('flex');
+    });
+
+    // Switch to Login from Forgot Password Modal
+    switchToLoginFromForgotBtn?.addEventListener('click', () => {
+        forgotPasswordModal.classList.add('hidden');
+        forgotPasswordModal.classList.remove('flex');
+        loginModal.classList.remove('hidden');
+        loginModal.classList.add('flex');
+    });
+
     // Close on backdrop click
     window.addEventListener('click', (e) => {
         if (e.target === loginModal) {
@@ -319,6 +425,10 @@
             registerModal.classList.add('hidden');
             registerModal.classList.remove('flex');
         }
+        if (e.target === forgotPasswordModal) {
+            forgotPasswordModal.classList.add('hidden');
+            forgotPasswordModal.classList.remove('flex');
+        }
     });
 
     // Close on Escape key
@@ -328,6 +438,8 @@
             loginModal.classList.remove('flex');
             registerModal.classList.add('hidden');
             registerModal.classList.remove('flex');
+            forgotPasswordModal.classList.add('hidden');
+            forgotPasswordModal.classList.remove('flex');
         }
     });
 </script>
