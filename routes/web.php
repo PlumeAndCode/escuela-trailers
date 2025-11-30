@@ -38,31 +38,27 @@ Route::get('/welcome', function () {
     return view('welcome');
 })->name('welcome');
 
+// Dashboard - Redirige al dashboard correspondiente según el rol
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        return redirect(auth()->user()->getDashboardPath());
     })->name('dashboard');
 });
 
-// Rutas de administración - Solo para administradores - USANDO MIDDLEWARE PARA LOS ROLES
-/*
+// =====================================================================
+// RUTAS DE ADMINISTRACIÓN - Solo para administradores
+// =====================================================================
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
+    'user.status',
     'role:administrador',
 ])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', Dashboard::class)->name('dashboard'); 
-    Route::get('/usuarios', Users::class)->name('users');
-});
-*/
-
-//Rutas de administración mientras no hay conexión con la base de datos
-Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/', AdminIndex::class)->name('dashboard');
     Route::get('/users', AdminUsers::class)->name('users.index');
     Route::get('/pagos', AdminPagos::class)->name('pagos.index');
@@ -70,20 +66,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/control', AdminControl::class)->name('control.index');
 });
 
-// Rutas de gestión - Para encargados
-/*
+// =====================================================================
+// RUTAS DE ENCARGADO - Solo para encargados
+// =====================================================================
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
+    'user.status',
     'role:encargado',
-])->prefix('/manager')->name('manager.')->group(function () {
-    // Aquí irán las rutas de encargado
-});
-*/
-
-//Rutas de encargado mientras no hay conexión con la base de datos
-Route::prefix('manager')->name('manager.')->group(function () {
+])->prefix('manager')->name('manager.')->group(function () {
     Route::get('/', ManagerIndex::class)->name('dashboard');
     Route::get('/lecciones', ManagerLecciones::class)->name('lecciones.index');
     Route::get('/trailers', ManagerTrailers::class)->name('trailers.index');
@@ -91,23 +83,13 @@ Route::prefix('manager')->name('manager.')->group(function () {
 });
 
 // =====================================================================
-// RUTAS DE CLIENTE - SIN AUTENTICACIÓN (PARA TESTING TEMPORAL)
+// RUTAS DE CLIENTE - Solo para clientes
 // =====================================================================
-Route::prefix('/client')->name('client.')->group(function () {
-    Route::get('/dashboard', ClientDashboard::class)->name('dashboard');
-    Route::get('/progress', ClientProgress::class)->name('progress');
-    Route::get('/payment-history', ClientPaymentHistory::class)->name('payment-history');
-    Route::get('/services', ClientServices::class)->name('services');
-});
-
-// =====================================================================
-// RUTAS DE CLIENTE - CON AUTENTICACIÓN (COMENTADAS TEMPORALMENTE)
-// =====================================================================
-/*
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
+    'user.status',
     'role:cliente',
 ])->prefix('/client')->name('client.')->group(function () {
     Route::get('/dashboard', ClientDashboard::class)->name('dashboard');
@@ -115,4 +97,3 @@ Route::middleware([
     Route::get('/payment-history', ClientPaymentHistory::class)->name('payment-history');
     Route::get('/services', ClientServices::class)->name('services');
 });
-*/

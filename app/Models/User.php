@@ -2,26 +2,28 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class User extends Authenticatable
+/**
+ * Modelo User
+ * 
+ * Representa a los usuarios del sistema de la Escuela de Manejo de Tráileres.
+ * Implementa autenticación con verificación de email y sistema de roles Spatie.
+ */
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens;
-
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
     use HasProfilePhoto;
     use Notifiable;
-    use TwoFactorAuthenticatable;
     use HasRoles;
     use HasUuids;
 
@@ -47,8 +49,6 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
-        'two_factor_recovery_codes',
-        'two_factor_secret',
     ];
 
     /**
@@ -72,6 +72,50 @@ class User extends Authenticatable
             'password' => 'hashed',
             'estado_usuario' => 'boolean',
         ];
+    }
+
+    /**
+     * Verifica si el usuario está activo
+     *
+     * @return bool
+     */
+    public function isActivo(): bool
+    {
+        return $this->estado_usuario === true;
+    }
+
+    /**
+     * Verifica si el usuario tiene un rol específico (usando Spatie)
+     *
+     * @param string $rol
+     * @return bool
+     */
+    public function tieneRol(string $rol): bool
+    {
+        return $this->hasRole($rol);
+    }
+
+    /**
+     * Obtiene la ruta del dashboard según el rol del usuario
+     * Redirección inteligente post-login
+     *
+     * @return string
+     */
+    public function getDashboardPath(): string
+    {
+        if ($this->hasRole('administrador')) {
+            return '/admin';
+        }
+        
+        if ($this->hasRole('encargado')) {
+            return '/manager';
+        }
+        
+        if ($this->hasRole('cliente')) {
+            return '/client/dashboard';
+        }
+        
+        return '/dashboard';
     }
 
     /**

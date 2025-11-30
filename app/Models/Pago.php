@@ -85,4 +85,40 @@ class Pago extends Model
     {
         return $query->where('estado_pago', 'pagado');
     }
+
+    /**
+     * Scope: Filtrar pagos vencidos
+     * Un pago se considera vencido si su estado es 'vencido' o si está pendiente y la fecha ya pasó
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeVencidos($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('estado_pago', 'vencido')
+              ->orWhere(function ($q2) {
+                  $q2->where('estado_pago', 'pendiente')
+                     ->where('fecha_pago', '<', now());
+              });
+        });
+    }
+
+    /**
+     * Accessor: Verifica si el pago está vencido
+     *
+     * @return bool
+     */
+    public function getEstaVencidoAttribute(): bool
+    {
+        if ($this->estado_pago === 'vencido') {
+            return true;
+        }
+        
+        if ($this->estado_pago === 'pendiente' && $this->fecha_pago < now()) {
+            return true;
+        }
+        
+        return false;
+    }
 }
