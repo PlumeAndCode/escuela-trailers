@@ -76,11 +76,33 @@ class User extends Authenticatable
 
     /**
      * Relación: Un usuario tiene muchas contrataciones
-     *
-     * @return HasMany
      */
     public function contrataciones(): HasMany
     {
         return $this->hasMany(Contratacion::class, 'id_usuario');
+    }
+
+    /**
+     * Obtener avances de lecciones a través de contrataciones
+     */
+    public function getAvancesLeccionesAttribute()
+    {
+        return AvanceLeccion::whereIn('id_contratacion', $this->contrataciones->pluck('id'))->get();
+    }
+
+    /**
+     * Relación: Un usuario tiene muchos trámites de licencia
+     */
+    public function tramitesLicencia(): HasMany
+    {
+        return $this->hasMany(TramiteLicencia::class, 'id_usuario');
+    }
+
+    /**
+     * Relación: Un usuario tiene muchas lecciones individuales
+     */
+    public function leccionesIndividuales(): HasMany
+    {
+        return $this->hasMany(LeccionIndividual::class, 'id_usuario');
     }
 }

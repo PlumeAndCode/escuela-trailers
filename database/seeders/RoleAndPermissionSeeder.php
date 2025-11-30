@@ -96,9 +96,9 @@ class RoleAndPermissionSeeder extends Seeder
         $managerPermissions = [
             'view_users',
             'view_services',
-            'create_hierings',
-            'edit_hierings',
-            'view_hierings',
+            'create_hirings',
+            'edit_hirings',
+            'view_hirings',
             'create_courses',
             'edit_courses',
             'view_courses',
@@ -121,7 +121,7 @@ class RoleAndPermissionSeeder extends Seeder
         // Assign permissions to client (cliente)
         $clientPermissions = [
             'view_services',
-            'view_hierings',
+            'view_hirings',
             'view_courses',
             'view_lessons',
             'view_rentals',

@@ -28,7 +28,7 @@
                     style="box-shadow: 0 0 20px rgba(255, 122, 0, 0.6);"
                     onmouseover="this.style.boxShadow='0 0 25px rgba(255, 122, 0, 0.8)'; this.style.transform='translateY(-2px)';"
                     onmouseout="this.style.boxShadow='0 0 20px rgba(255, 122, 0, 0.6)'; this.style.transform='translateY(0)';"
-                    onclick="openModalNuevo()">
+                    wire:click="openCreateModal">
                     + Nuevo
                 </button>
             </div>
@@ -65,7 +65,7 @@
                                                 style="background-color: #2563EB;"
                                                 onmouseover="this.style.boxShadow='0 0 20px rgba(37, 99, 235, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';"
                                                 onmouseout="this.style.boxShadow='0 0 10px rgba(37, 99, 235, 0.4)'; this.style.transform='translateY(0) scale(1)';"
-                                                onclick="openModalEditar('{{ $u->id }}', '{{ $u->nombre_completo ?? $u->name }}', '{{ $u->email }}', '{{ $u->telefono ?? '' }}', '{{ $u->rol ?? '' }}')">
+                                                wire:click="openEditModal('{{ $u->id }}')">
                                                 Editar
                                             </button>
                                             <button
@@ -94,28 +94,28 @@
         @endif
 
         <!-- Modal para crear nuevo usuario -->
-        <div class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-4" id="modalNuevoUsuario">
-            <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-y-auto">
+        @if($showCreateModal)
+        <div class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-y-auto" @click.away="$wire.closeCreateModal()">
                 <div class="text-white px-8 py-6 sticky top-0 z-10" style="background-color: #1b3346;">
-                    <h2 class="text-3xl font-bold">Crear Nuevo Usuario</h2>
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-3xl font-bold">Crear Nuevo Usuario</h2>
+                        <button class="text-white text-3xl hover:text-gray-300 transition" wire:click="closeCreateModal">✕</button>
+                    </div>
                 </div>
                 
-                <form class="p-10 bg-white">
+                <form wire:submit.prevent="createUser" class="p-10 bg-white">
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
                         <!-- Foto -->
                         <div class="flex flex-col items-center justify-start">
                             <label class="font-bold text-gray-900 mb-4 block text-sm">Fotografía</label>
-                            <div class="w-56 h-56 border-4 border-dashed border-gray-400 rounded-lg flex items-center justify-center cursor-pointer bg-gray-50 transition-all duration-300 overflow-hidden relative" 
-                                id="photoUploadNuevo"
-                                onmouseover="this.style.borderColor='#FF7A00'; this.style.backgroundColor='#fff7ed';"
-                                onmouseout="this.style.borderColor='#d1d5db'; this.style.backgroundColor='#f9fafb';">
+                            <div class="w-56 h-56 border-4 border-dashed border-gray-400 rounded-lg flex items-center justify-center cursor-pointer bg-gray-50 transition-all duration-300 overflow-hidden relative">
                                 <div class="text-center pointer-events-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                                     </svg>
                                     <p class="text-gray-600 text-sm font-medium">Subir foto</p>
                                 </div>
-                                <input type="file" accept="image/*" class="absolute opacity-0 w-full h-full cursor-pointer" onchange="previewPhoto(event, 'photoUploadNuevo')">
                             </div>
                         </div>
 
@@ -123,75 +123,91 @@
                         <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="flex flex-col">
                                 <label class="font-bold text-gray-900 mb-2 text-sm">Nombre Completo *</label>
-                                <input type="text" placeholder="Ingrese nombre completo" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm" required>
+                                <input type="text" wire:model="createForm.nombre_completo" placeholder="Ingrese nombre completo" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm">
+                                @error('createForm.nombre_completo') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
 
                             <div class="flex flex-col">
-                                <label class="font-bold text-gray-900 mb-2 text-sm">Teléfono *</label>
-                                <input type="tel" placeholder="Ingrese teléfono" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm" required>
+                                <label class="font-bold text-gray-900 mb-2 text-sm">Teléfono</label>
+                                <input type="tel" wire:model="createForm.telefono" placeholder="Ingrese teléfono" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm">
+                                @error('createForm.telefono') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
 
                             <div class="md:col-span-2 flex flex-col">
                                 <label class="font-bold text-gray-900 mb-2 text-sm">Correo Electrónico *</label>
-                                <input type="email" placeholder="Ingrese correo electrónico" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm" required>
+                                <input type="email" wire:model="createForm.email" placeholder="Ingrese correo electrónico" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm">
+                                @error('createForm.email') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
 
                             <div class="flex flex-col">
                                 <label class="font-bold text-gray-900 mb-2 text-sm">Contraseña *</label>
-                                <input type="password" placeholder="Ingrese contraseña" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm" required>
+                                <input type="password" wire:model="createForm.password" placeholder="Ingrese contraseña" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm">
+                                @error('createForm.password') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div class="flex flex-col">
+                                <label class="font-bold text-gray-900 mb-2 text-sm">Confirmar Contraseña *</label>
+                                <input type="password" wire:model="createForm.password_confirmation" placeholder="Confirme contraseña" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm">
                             </div>
 
                             <div class="flex flex-col">
                                 <label class="font-bold text-gray-900 mb-2 text-sm">Tipo de Usuario *</label>
-                                <select class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm" required>
+                                <select wire:model="createForm.rol" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm">
                                     <option value="">Seleccione un tipo</option>
-                                    <option value="alumno">Alumno</option>
                                     <option value="cliente">Cliente</option>
                                     <option value="encargado">Encargado</option>
                                     <option value="administrador">Administrador</option>
+                                </select>
+                                @error('createForm.rol') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div class="flex flex-col">
+                                <label class="font-bold text-gray-900 mb-2 text-sm">Estado</label>
+                                <select wire:model="createForm.estado_usuario" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm">
+                                    <option value="1">Activo</option>
+                                    <option value="0">Inactivo</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
                     <div class="flex gap-4 justify-end pt-6 border-t-2 border-gray-200">
-                        <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 text-sm" onclick="closeModalNuevo()">
+                        <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 text-sm" wire:click="closeCreateModal">
                             Cancelar
                         </button>
                         <button type="submit" class="text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 text-sm" 
-                            style="background-color: #FF7A00;"
-                            onmouseover="this.style.boxShadow='0 0 25px rgba(255, 122, 0, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';"
-                            onmouseout="this.style.boxShadow='0 0 10px rgba(255, 122, 0, 0.4)'; this.style.transform='translateY(0) scale(1)';">
+                            style="background-color: #FF7A00;">
                             Guardar
                         </button>
                     </div>
                 </form>
             </div>
         </div>
+        @endif
 
         <!-- Modal para editar usuario -->
-        <div class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-4" id="modalEditarUsuario">
-            <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-y-auto">
+        @if($showEditModal)
+        <div class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-y-auto" @click.away="$wire.closeEditModal()">
                 <div class="text-white px-8 py-6 sticky top-0 z-10" style="background-color: #1b3346;">
-                    <h2 class="text-3xl font-bold">Editar Usuario</h2>
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-3xl font-bold">Editar Usuario</h2>
+                        <button class="text-white text-3xl hover:text-gray-300 transition" wire:click="closeEditModal">✕</button>
+                    </div>
                 </div>
                 
-                <form class="p-10 bg-white">
+                <form wire:submit.prevent="updateUser" class="p-10 bg-white">
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
                         <!-- Foto -->
                         <div class="flex flex-col items-center justify-start">
                             <label class="font-bold text-gray-900 mb-4 block text-sm">Fotografía</label>
-                            <div class="w-56 h-56 border-4 border-dashed border-gray-400 rounded-lg flex items-center justify-center cursor-pointer bg-gray-50 transition-all duration-300 overflow-hidden relative" 
-                                id="photoUploadEditar"
-                                onmouseover="this.style.borderColor='#FF7A00'; this.style.backgroundColor='#fff7ed';"
-                                onmouseout="this.style.borderColor='#d1d5db'; this.style.backgroundColor='#f9fafb';">
+                            <div class="w-56 h-56 border-4 border-dashed border-gray-400 rounded-lg flex items-center justify-center cursor-pointer bg-gray-50 transition-all duration-300 overflow-hidden relative">
                                 <div class="text-center pointer-events-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                                     </svg>
                                     <p class="text-gray-600 text-sm font-medium">Subir foto</p>
                                 </div>
-                                <input type="file" accept="image/*" class="absolute opacity-0 w-full h-full cursor-pointer" onchange="previewPhoto(event, 'photoUploadEditar')">
                             </div>
                         </div>
 
@@ -199,98 +215,67 @@
                         <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="flex flex-col">
                                 <label class="font-bold text-gray-900 mb-2 text-sm">Nombre Completo *</label>
-                                <input type="text" id="editNombre" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm" required>
+                                <input type="text" wire:model="editForm.nombre_completo" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm">
+                                @error('editForm.nombre_completo') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
 
                             <div class="flex flex-col">
-                                <label class="font-bold text-gray-900 mb-2 text-sm">Teléfono *</label>
-                                <input type="tel" id="editTelefono" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm" required>
+                                <label class="font-bold text-gray-900 mb-2 text-sm">Teléfono</label>
+                                <input type="tel" wire:model="editForm.telefono" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm">
+                                @error('editForm.telefono') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
 
                             <div class="md:col-span-2 flex flex-col">
                                 <label class="font-bold text-gray-900 mb-2 text-sm">Correo Electrónico *</label>
-                                <input type="email" id="editEmail" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm" required>
-                            </div>
-
-                            <div class="flex flex-col">
-                                <label class="font-bold text-gray-900 mb-2 text-sm">Contraseña</label>
-                                <input type="password" placeholder="Dejar en blanco para mantener la actual" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm">
+                                <input type="email" wire:model="editForm.email" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm">
+                                @error('editForm.email') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
 
                             <div class="flex flex-col">
                                 <label class="font-bold text-gray-900 mb-2 text-sm">Tipo de Usuario *</label>
-                                <select id="editRol" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm" required>
+                                <select wire:model="editForm.rol" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm">
                                     <option value="">Seleccione un tipo</option>
-                                    <option value="alumno">Alumno</option>
                                     <option value="cliente">Cliente</option>
                                     <option value="encargado">Encargado</option>
                                     <option value="administrador">Administrador</option>
+                                </select>
+                                @error('editForm.rol') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div class="flex flex-col">
+                                <label class="font-bold text-gray-900 mb-2 text-sm">Estado</label>
+                                <select wire:model="editForm.estado_usuario" class="px-3 py-2 border-2 border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm">
+                                    <option value="1">Activo</option>
+                                    <option value="0">Inactivo</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
                     <div class="flex gap-4 justify-end pt-6 border-t-2 border-gray-200">
-                        <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 text-sm" onclick="closeModalEditar()">
+                        <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 text-sm" wire:click="closeEditModal">
                             Cancelar
                         </button>
                         <button type="submit" class="text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 text-sm" 
-                            style="background-color: #FF7A00;"
-                            onmouseover="this.style.boxShadow='0 0 25px rgba(255, 122, 0, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';"
-                            onmouseout="this.style.boxShadow='0 0 10px rgba(255, 122, 0, 0.4)'; this.style.transform='translateY(0) scale(1)';">
+                            style="background-color: #FF7A00;">
                             Guardar Cambios
                         </button>
                     </div>
                 </form>
             </div>
         </div>
+        @endif
+
+        <!-- Mensaje de éxito/error -->
+        @if (session()->has('message'))
+            <div class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
+                {{ session('message') }}
+            </div>
+        @endif
+        @if (session()->has('error'))
+            <div class="fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
+                {{ session('error') }}
+            </div>
+        @endif
     </div>
-
-    <script>
-        function openModalNuevo() {
-            document.getElementById('modalNuevoUsuario').classList.remove('hidden');
-        }
-
-        function closeModalNuevo() {
-            document.getElementById('modalNuevoUsuario').classList.add('hidden');
-        }
-
-        function openModalEditar(id, nombre, email, telefono, rol) {
-            document.getElementById('editNombre').value = nombre;
-            document.getElementById('editEmail').value = email;
-            document.getElementById('editTelefono').value = telefono;
-            document.getElementById('editRol').value = rol;
-            document.getElementById('modalEditarUsuario').classList.remove('hidden');
-        }
-
-        function closeModalEditar() {
-            document.getElementById('modalEditarUsuario').classList.add('hidden');
-        }
-
-        function previewPhoto(event, uploadId) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const photoUpload = document.getElementById(uploadId);
-                    photoUpload.innerHTML = `<img src="${e.target.result}" alt="Preview" class="w-full h-full object-cover">`;
-                    const input = document.createElement('input');
-                    input.type = 'file';
-                    input.accept = 'image/*';
-                    input.className = 'absolute opacity-0 w-full h-full cursor-pointer';
-                    input.onchange = function(evt) { previewPhoto(evt, uploadId); };
-                    photoUpload.appendChild(input);
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        document.getElementById('modalNuevoUsuario')?.addEventListener('click', function(e) {
-            if (e.target === this) closeModalNuevo();
-        });
-
-        document.getElementById('modalEditarUsuario')?.addEventListener('click', function(e) {
-            if (e.target === this) closeModalEditar();
-        });
-    </script>
 </div>
