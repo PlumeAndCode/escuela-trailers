@@ -69,4 +69,28 @@ class AvanceLeccion extends Model
     {
         return $this->belongsTo(Contratacion::class, 'id_contratacion');
     }
+
+    /**
+     * Accessor: Obtener el usuario del avance a través de la contratación
+     */
+    public function getUsuarioAttribute()
+    {
+        return $this->contratacion?->usuario;
+    }
+
+    /**
+     * Accessor: Obtener el ID del usuario
+     */
+    public function getUsuarioIdAttribute()
+    {
+        return $this->contratacion?->id_usuario;
+    }
+
+    /**
+     * Verificar si el avance está completado
+     */
+    public function getCompletadoAttribute(): bool
+    {
+        return $this->estado_avance === 'completado' || $this->estado_avance === 'pagado';
+    }
 }

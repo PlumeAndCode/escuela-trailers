@@ -4,6 +4,12 @@ namespace App\Livewire\Admin;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use App\Models\AvanceLeccion;
+use App\Models\Contratacion;
+use App\Models\Curso;
+use App\Models\Trailer;
+use App\Models\RentaTrailer;
+use App\Models\User;
 use Illuminate\Support\Collection;
 
 class Control extends Component
@@ -26,9 +32,33 @@ class Control extends Component
     public $perPageTrailersRent = 25;
     public $searchTrailersRent = '';
 
-    // Reportes
+    // Reportes (mantenimientos/incidencias)
     public $perPageReportes = 25;
     public $searchReportes = '';
+
+    // Modal para ver detalle de avance
+    public $showAvanceModal = false;
+    public $avanceSeleccionado = null;
+
+    // Modal para ver detalle de trailer
+    public $showTrailerModal = false;
+    public $trailerSeleccionado = null;
+
+    // Modal para nueva renta
+    public $showRentaModal = false;
+    public $rentaForm = [
+        'trailer_id' => '',
+        'contratacion_id' => '',
+        'fecha_renta' => '',
+        'fecha_devolucion_estimada' => '',
+    ];
+
+    // Modal para crear reporte de mantenimiento
+    public $showReporteModal = false;
+    public $reporteForm = [
+        'trailer_id' => '',
+        'motivo' => '',
+    ];
 
     protected $queryString = [
         'activeTab' => ['except' => 'avance'],
@@ -38,6 +68,16 @@ class Control extends Component
         'searchTrailersRent' => ['except' => ''],
         'searchReportes' => ['except' => ''],
     ];
+
+    protected function rules()
+    {
+        return [
+            'rentaForm.trailer_id' => 'required|exists:trailers,id',
+            'rentaForm.contratacion_id' => 'required|exists:contrataciones,id',
+            'rentaForm.fecha_renta' => 'required|date',
+            'rentaForm.fecha_devolucion_estimada' => 'required|date|after:rentaForm.fecha_renta',
+        ];
+    }
 
     public function switchTab($tab)
     {
@@ -98,266 +138,288 @@ class Control extends Component
         $this->activeTab = 'reportes';
     }
 
-    private function getAvances()
+    // Modal Avance
+    public function verAvance(string $avanceId): void
     {
-        return collect([
-            (object)[
-                'id_usuario' => '001',
-                'nombre' => 'Juan Pérez',
-                'curso' => 'Curso de Conducción A',
-                'lecciones_total' => 12,
-                'lecciones_tomadas' => 5,
-                'porcentaje' => 42,
-            ],
-            (object)[
-                'id_usuario' => '002',
-                'nombre' => 'María López',
-                'curso' => 'Seguridad Vial',
-                'lecciones_total' => 8,
-                'lecciones_tomadas' => 8,
-                'porcentaje' => 100,
-            ],
-            (object)[
-                'id_usuario' => '003',
-                'nombre' => 'Carlos Reyes',
-                'curso' => 'Manejo de Remolques',
-                'lecciones_total' => 10,
-                'lecciones_tomadas' => 3,
-                'porcentaje' => 30,
-            ],
-            (object)[
-                'id_usuario' => '004',
-                'nombre' => 'Ana Torres',
-                'curso' => 'Señalamientos y Normativas',
-                'lecciones_total' => 9,
-                'lecciones_tomadas' => 6,
-                'porcentaje' => 67,
-            ],
-            (object)[
-                'id_usuario' => '005',
-                'nombre' => 'Roberto García',
-                'curso' => 'Curso de Conducción A',
-                'lecciones_total' => 12,
-                'lecciones_tomadas' => 7,
-                'porcentaje' => 58,
-            ],
-            (object)[
-                'id_usuario' => '006',
-                'nombre' => 'Sofía Martínez',
-                'curso' => 'Seguridad Vial',
-                'lecciones_total' => 8,
-                'lecciones_tomadas' => 2,
-                'porcentaje' => 25,
-            ],
-        ]);
+        $this->avanceSeleccionado = AvanceLeccion::with(['usuario', 'leccion.curso'])
+            ->find($avanceId);
+        
+        if ($this->avanceSeleccionado) {
+            $this->showAvanceModal = true;
+        }
     }
 
-    private function getTrailersDisponibles()
+    public function closeAvanceModal(): void
     {
-        return collect([
-            (object)[
-                'id_trailer' => '#T001',
-                'modelo' => 'Wabash Dry Van',
-                'placa' => 'ABC-1234',
-                'año' => 2022,
-                'capacidad' => 25,
-                'descripcion' => 'Remolque seco en excelente estado',
-            ],
-            (object)[
-                'id_trailer' => '#T002',
-                'modelo' => 'Wabash Refrigerated',
-                'placa' => 'XYZ-5678',
-                'año' => 2021,
-                'capacidad' => 20,
-                'descripcion' => 'Remolque refrigerado con sistema activo',
-            ],
-            (object)[
-                'id_trailer' => '#T003',
-                'modelo' => 'Utility Flatbed',
-                'placa' => 'DEF-9012',
-                'año' => 2023,
-                'capacidad' => 30,
-                'descripcion' => 'Plataforma plana para cargas variadas',
-            ],
-            (object)[
-                'id_trailer' => '#T004',
-                'modelo' => 'Stoughton Boxvan',
-                'placa' => 'GHI-3456',
-                'año' => 2020,
-                'capacidad' => 22,
-                'descripcion' => 'Caja cerrada para protección',
-            ],
-            (object)[
-                'id_trailer' => '#T005',
-                'modelo' => 'Hyster Lowboy',
-                'placa' => 'JKL-7890',
-                'año' => 2019,
-                'capacidad' => 35,
-                'descripcion' => 'Remolque bajío para cargas pesadas',
-            ],
-        ]);
+        $this->showAvanceModal = false;
+        $this->avanceSeleccionado = null;
     }
 
-    private function getTrailersRentados()
+    // Modal Trailer
+    public function verTrailer(string $trailerId): void
     {
-        return collect([
-            (object)[
-                'id_trailer' => '#T007',
-                'modelo' => 'Great Dane Dry Van',
-                'placa' => 'PQR-6789',
-                'usuario' => 'Juan García',
-                'fecha_inicio' => '15/11/2024',
-                'fecha_devolucion' => '22/11/2024',
-                'notas' => 'Transporte mercancía general',
-            ],
-            (object)[
-                'id_trailer' => '#T008',
-                'modelo' => 'Vanguard Refrigerated',
-                'placa' => 'STU-0123',
-                'usuario' => 'María Rodríguez',
-                'fecha_inicio' => '10/11/2024',
-                'fecha_devolucion' => '25/11/2024',
-                'notas' => 'Productos perecederos',
-            ],
-            (object)[
-                'id_trailer' => '#T009',
-                'modelo' => 'Utilities Flatbed',
-                'placa' => 'VWX-4567',
-                'usuario' => 'Carlos López',
-                'fecha_inicio' => '01/11/2024',
-                'fecha_devolucion' => '01/12/2024',
-                'notas' => 'Materiales construcción',
-            ],
-            (object)[
-                'id_trailer' => '#T010',
-                'modelo' => 'Wabash Tanker',
-                'placa' => 'YZA-8901',
-                'usuario' => 'Roberto Fernández',
-                'fecha_inicio' => '12/11/2024',
-                'fecha_devolucion' => '19/11/2024',
-                'notas' => 'Productos químicos',
-            ],
-        ]);
+        $this->trailerSeleccionado = Trailer::with(['rentasTrailer.contratacion.usuario'])
+            ->find($trailerId);
+        
+        if ($this->trailerSeleccionado) {
+            $this->showTrailerModal = true;
+        }
     }
 
-    private function getReportes()
+    public function closeTrailerModal(): void
     {
-        return collect([
-            (object)[
-                'id_trailer' => '#T012',
-                'modelo' => 'Wabash Dry Van',
-                'placa' => 'ABC-1234',
-                'año' => 2021,
-                'cantidad_reportes' => 5,
-            ],
-            (object)[
-                'id_trailer' => '#T013',
-                'modelo' => 'Utility Flatbed',
-                'placa' => 'DEF-5678',
-                'año' => 2020,
-                'cantidad_reportes' => 3,
-            ],
-            (object)[
-                'id_trailer' => '#T014',
-                'modelo' => 'Stoughton Boxvan',
-                'placa' => 'GHI-9012',
-                'año' => 2019,
-                'cantidad_reportes' => 7,
-            ],
-            (object)[
-                'id_trailer' => '#T015',
-                'modelo' => 'Wabash Tanker',
-                'placa' => 'JKL-3456',
-                'año' => 2022,
-                'cantidad_reportes' => 2,
-            ],
+        $this->showTrailerModal = false;
+        $this->trailerSeleccionado = null;
+    }
+
+    // Modal Renta
+    public function openRentaModal(string $trailerId = null): void
+    {
+        $this->reset('rentaForm');
+        $this->rentaForm['fecha_renta'] = now()->format('Y-m-d');
+        if ($trailerId) {
+            $this->rentaForm['trailer_id'] = $trailerId;
+        }
+        $this->showRentaModal = true;
+    }
+
+    public function closeRentaModal(): void
+    {
+        $this->showRentaModal = false;
+        $this->reset('rentaForm');
+    }
+
+    public function crearRenta(): void
+    {
+        $this->validate($this->rules());
+
+        RentaTrailer::create([
+            'id_trailer' => $this->rentaForm['trailer_id'],
+            'id_contratacion' => $this->rentaForm['contratacion_id'],
+            'fecha_renta' => $this->rentaForm['fecha_renta'],
+            'fecha_devolucion_estimada' => $this->rentaForm['fecha_devolucion_estimada'],
+            'estado_renta' => 'activa',
         ]);
+
+        // Actualizar estado del trailer
+        Trailer::find($this->rentaForm['trailer_id'])->update([
+            'estado_trailer' => 'rentado',
+        ]);
+
+        $this->closeRentaModal();
+        session()->flash('message', 'Renta creada correctamente.');
+    }
+
+    // Finalizar renta
+    public function finalizarRenta(string $rentaId): void
+    {
+        $renta = RentaTrailer::find($rentaId);
+        if ($renta && $renta->estado_renta === 'activa') {
+            $renta->update([
+                'estado_renta' => 'devuelta',
+                'fecha_devolucion_real' => now(),
+            ]);
+
+            // Actualizar estado del trailer
+            $renta->trailer->update([
+                'estado_trailer' => 'disponible',
+            ]);
+
+            session()->flash('message', 'Renta finalizada correctamente.');
+        }
+    }
+
+    // Cambiar estado de trailer
+    public function cambiarEstadoTrailer(string $trailerId, string $estado): void
+    {
+        $trailer = Trailer::find($trailerId);
+        if ($trailer) {
+            $updateData = ['estado_trailer' => $estado];
+            
+            // Limpiar motivo de mantenimiento si sale de mantenimiento
+            if ($estado !== 'mantenimiento') {
+                $updateData['motivo_mantenimiento'] = null;
+            }
+            
+            $trailer->update($updateData);
+            session()->flash('message', 'Estado del trailer actualizado.');
+        }
+    }
+
+    // Modal de reporte de mantenimiento
+    public function openReporteModal(): void
+    {
+        $this->reset('reporteForm');
+        $this->showReporteModal = true;
+    }
+
+    public function closeReporteModal(): void
+    {
+        $this->showReporteModal = false;
+        $this->reset('reporteForm');
+    }
+
+    public function crearReporte(): void
+    {
+        $this->validate([
+            'reporteForm.trailer_id' => 'required|exists:trailers,id',
+            'reporteForm.motivo' => 'required|string|min:10',
+        ], [
+            'reporteForm.trailer_id.required' => 'Debe seleccionar un trailer.',
+            'reporteForm.motivo.required' => 'Debe ingresar el motivo del reporte.',
+            'reporteForm.motivo.min' => 'El motivo debe tener al menos 10 caracteres.',
+        ]);
+
+        // Cambiar estado del trailer a mantenimiento y guardar motivo
+        $trailer = Trailer::find($this->reporteForm['trailer_id']);
+        if ($trailer) {
+            $trailer->update([
+                'estado_trailer' => 'mantenimiento',
+                'motivo_mantenimiento' => $this->reporteForm['motivo'],
+            ]);
+            session()->flash('message', 'Trailer enviado a mantenimiento correctamente.');
+        }
+
+        $this->closeReporteModal();
+    }
+
+    // Obtener trailers que pueden ser reportados (solo disponibles sin rentas activas)
+    public function getTrailersParaReporteProperty()
+    {
+        // Excluir trailers con rentas activas
+        $trailersConRentaActiva = RentaTrailer::where('estado_renta', 'activa')
+            ->pluck('id_trailer')
+            ->toArray();
+
+        return Trailer::where('estado_trailer', 'disponible')
+            ->whereNotIn('id', $trailersConRentaActiva)
+            ->orderBy('modelo')
+            ->get();
+    }
+
+    // Obtener cursos para el selector
+    public function getCursosProperty()
+    {
+        return Curso::all();
+    }
+
+    // Obtener contrataciones activas de servicios de renta para el selector
+    public function getContratacionesRentaProperty()
+    {
+        return Contratacion::with(['usuario', 'servicio'])
+            ->where('estado_contratacion', 'activo')
+            ->whereHas('servicio', function ($q) {
+                $q->where('tipo_servicio', 'renta_trailer');
+            })
+            ->get();
+    }
+
+    // Obtener trailers disponibles para el selector
+    public function getTrailersDisponiblesSelectProperty()
+    {
+        return Trailer::where('estado_trailer', 'disponible')
+            ->orderBy('modelo')
+            ->get();
     }
 
     public function render()
     {
-        // AVANCE ALUMNO
-        $avances = $this->getAvances();
-
-        if (!empty($this->searchAvance)) {
-            $search = strtolower($this->searchAvance);
-            $avances = $avances->filter(function ($a) use ($search) {
-                return stripos($a->id_usuario, $search) !== false ||
-                       stripos($a->nombre, $search) !== false;
+        // AVANCE ALUMNO - Obtener avances agrupados por contratación y curso
+        $avancesQuery = AvanceLeccion::with(['contratacion.usuario', 'leccion.curso'])
+            ->when($this->searchAvance, function ($q) {
+                $q->whereHas('contratacion.usuario', function ($inner) {
+                    $inner->where('nombre_completo', 'ilike', "%{$this->searchAvance}%");
+                });
             });
-        }
 
+        // Agrupar avances por contratación
+        $avancesAgrupados = $avancesQuery->get()->groupBy('id_contratacion')->map(function ($avances) {
+            $contratacion = $avances->first()->contratacion;
+            $usuario = $contratacion?->usuario;
+            
+            // Agrupar por curso
+            $avancesPorCurso = $avances->groupBy(function ($avance) {
+                return $avance->leccion?->curso?->id ?? 'sin-curso';
+            });
+
+            return $avancesPorCurso->map(function ($avancesCurso, $cursoId) use ($usuario, $contratacion) {
+                $curso = $avancesCurso->first()->leccion?->curso;
+                if (!$curso || !$usuario) return null;
+
+                $totalLecciones = $curso->lecciones->count();
+                $leccionesCompletadas = $avancesCurso->filter(fn($a) => $a->completado)->count();
+                $porcentaje = $totalLecciones > 0 ? round(($leccionesCompletadas / $totalLecciones) * 100) : 0;
+
+                return (object)[
+                    'contratacion_id' => $contratacion->id,
+                    'usuario_id' => $usuario->id,
+                    'nombre' => $usuario->nombre_completo,
+                    'email' => $usuario->email,
+                    'curso_id' => $curso->id,
+                    'curso' => $curso->nombre_curso,
+                    'lecciones_total' => $totalLecciones,
+                    'lecciones_completadas' => $leccionesCompletadas,
+                    'porcentaje' => $porcentaje,
+                ];
+            })->filter();
+        })->flatten();
+
+        // Filtrar por curso si se especifica
         if (!empty($this->filtroCursoAvance)) {
-            $avances = $avances->filter(function ($a) {
-                return stripos($a->curso, $this->filtroCursoAvance) !== false;
+            $avancesAgrupados = $avancesAgrupados->filter(function ($item) {
+                return $item->curso_id === $this->filtroCursoAvance;
             });
         }
 
-        $avances = $avances->values()->toArray();
         $avances = new \Illuminate\Pagination\Paginator(
-            array_slice($avances, ($this->getPage('avancesPage') - 1) * $this->perPageAvance, $this->perPageAvance),
+            $avancesAgrupados->forPage($this->getPage('avancesPage'), $this->perPageAvance)->values(),
             $this->perPageAvance,
             $this->getPage('avancesPage'),
             ['path' => route('admin.control.index'), 'pageName' => 'avancesPage']
         );
 
-        // TRAILERS DISPONIBLES
-        $trailersDisponibles = $this->getTrailersDisponibles();
+        // TRAILERS DISPONIBLES - Excluir los que tienen rentas activas
+        $trailersConRentaActiva = RentaTrailer::where('estado_renta', 'activa')
+            ->pluck('id_trailer')
+            ->toArray();
 
-        if (!empty($this->searchTrailersDisp)) {
-            $search = strtolower($this->searchTrailersDisp);
-            $trailersDisponibles = $trailersDisponibles->filter(function ($t) use ($search) {
-                return stripos($t->id_trailer, $search) !== false ||
-                       stripos($t->placa, $search) !== false ||
-                       stripos($t->modelo, $search) !== false;
-            });
-        }
-
-        $trailersDisponibles = $trailersDisponibles->values()->toArray();
-        $trailersDisponibles = new \Illuminate\Pagination\Paginator(
-            array_slice($trailersDisponibles, ($this->getPage('trailersDispPage') - 1) * $this->perPageTrailersDisp, $this->perPageTrailersDisp),
-            $this->perPageTrailersDisp,
-            $this->getPage('trailersDispPage'),
-            ['path' => route('admin.control.index'), 'pageName' => 'trailersDispPage']
-        );
+        $trailersDisponibles = Trailer::query()
+            ->where('estado_trailer', 'disponible')
+            ->whereNotIn('id', $trailersConRentaActiva)
+            ->when($this->searchTrailersDisp, function ($q) {
+                $q->where(function ($inner) {
+                    $inner->where('modelo', 'ilike', "%{$this->searchTrailersDisp}%")
+                          ->orWhere('placa', 'ilike', "%{$this->searchTrailersDisp}%")
+                          ->orWhere('numero_serie', 'ilike', "%{$this->searchTrailersDisp}%");
+                });
+            })
+            ->paginate($this->perPageTrailersDisp, ['*'], 'trailersDispPage');
 
         // TRAILERS RENTADOS
-        $trailersRentados = $this->getTrailersRentados();
+        $trailersRentados = RentaTrailer::query()
+            ->with(['trailer', 'contratacion.usuario'])
+            ->where('estado_renta', 'activa')
+            ->when($this->searchTrailersRent, function ($q) {
+                $q->whereHas('trailer', function ($inner) {
+                    $inner->where('modelo', 'ilike', "%{$this->searchTrailersRent}%")
+                          ->orWhere('placa', 'ilike', "%{$this->searchTrailersRent}%");
+                })
+                ->orWhereHas('contratacion.usuario', function ($inner) {
+                    $inner->where('nombre_completo', 'ilike', "%{$this->searchTrailersRent}%");
+                });
+            })
+            ->paginate($this->perPageTrailersRent, ['*'], 'trailersRentPage');
 
-        if (!empty($this->searchTrailersRent)) {
-            $search = strtolower($this->searchTrailersRent);
-            $trailersRentados = $trailersRentados->filter(function ($t) use ($search) {
-                return stripos($t->id_trailer, $search) !== false ||
-                       stripos($t->usuario, $search) !== false;
-            });
-        }
-
-        $trailersRentados = $trailersRentados->values()->toArray();
-        $trailersRentados = new \Illuminate\Pagination\Paginator(
-            array_slice($trailersRentados, ($this->getPage('trailersRentPage') - 1) * $this->perPageTrailersRent, $this->perPageTrailersRent),
-            $this->perPageTrailersRent,
-            $this->getPage('trailersRentPage'),
-            ['path' => route('admin.control.index'), 'pageName' => 'trailersRentPage']
-        );
-
-        // REPORTES
-        $reportes = $this->getReportes();
-
-        if (!empty($this->searchReportes)) {
-            $search = strtolower($this->searchReportes);
-            $reportes = $reportes->filter(function ($r) use ($search) {
-                return stripos($r->id_trailer, $search) !== false ||
-                       stripos($r->modelo, $search) !== false;
-            });
-        }
-
-        $reportes = $reportes->values()->toArray();
-        $reportes = new \Illuminate\Pagination\Paginator(
-            array_slice($reportes, ($this->getPage('reportesPage') - 1) * $this->perPageReportes, $this->perPageReportes),
-            $this->perPageReportes,
-            $this->getPage('reportesPage'),
-            ['path' => route('admin.control.index'), 'pageName' => 'reportesPage']
-        );
+        // REPORTES - Trailers que requieren mantenimiento
+        $reportes = Trailer::query()
+            ->where('estado_trailer', 'mantenimiento')
+            ->when($this->searchReportes, function ($q) {
+                $q->where(function ($inner) {
+                    $inner->where('modelo', 'ilike', "%{$this->searchReportes}%")
+                          ->orWhere('placa', 'ilike', "%{$this->searchReportes}%");
+                });
+            })
+            ->paginate($this->perPageReportes, ['*'], 'reportesPage');
 
         return view('livewire.admin.control', [
             'avances' => $avances,
@@ -365,6 +427,7 @@ class Control extends Component
             'trailersRentados' => $trailersRentados,
             'reportes' => $reportes,
             'activeTab' => $this->activeTab,
+            'trailersParaReporte' => $this->trailersParaReporte,
         ])->layout('layouts.admin');
     }
 }

@@ -37,6 +37,8 @@ class Trailer extends Model
         'numero_serie',
         'placa',
         'estado_trailer',
+        'motivo_mantenimiento',
+        'notas',
     ];
 
     /**
@@ -63,6 +65,16 @@ class Trailer extends Model
     }
 
     /**
+     * Alias para rentas (compatibilidad con componentes)
+     *
+     * @return HasMany
+     */
+    public function rentasTrailer(): HasMany
+    {
+        return $this->hasMany(RentaTrailer::class, 'id_trailer');
+    }
+
+    /**
      * Scope: Filtrar trailers disponibles
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
@@ -71,5 +83,27 @@ class Trailer extends Model
     public function scopeDisponibles($query)
     {
         return $query->where('estado_trailer', 'disponible');
+    }
+
+    /**
+     * Scope: Filtrar trailers rentados
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeRentados($query)
+    {
+        return $query->where('estado_trailer', 'rentado');
+    }
+
+    /**
+     * Scope: Filtrar trailers en mantenimiento
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeEnMantenimiento($query)
+    {
+        return $query->where('estado_trailer', 'mantenimiento');
     }
 }

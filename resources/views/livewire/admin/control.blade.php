@@ -68,7 +68,7 @@
                     <table class="w-full border-collapse">
                         <thead>
                             <tr style="background-color: #1b3346;">
-                                <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-300">ID Usuario</th>
+                                <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-300">#</th>
                                 <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-300">Nombre</th>
                                 <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Curso</th>
                                 <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Lecciones del Curso</th>
@@ -77,13 +77,13 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white">
-                            @forelse($avances as $avance)
+                            @forelse($avances as $index => $avance)
                                 <tr class="border-b border-gray-300 hover:bg-gray-50 transition-colors duration-200">
-                                    <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">{{ $avance->id_usuario }}</td>
+                                    <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">{{ $avances->firstItem() + $index }}</td>
                                     <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">{{ $avance->nombre }}</td>
                                     <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $avance->curso }}</td>
                                     <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $avance->lecciones_total }}</td>
-                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $avance->lecciones_tomadas }}</td>
+                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $avance->lecciones_completadas }}</td>
                                     <td class="px-4 py-3 text-center text-gray-800 textbase">
                                         <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden mb-2">
                                             <div class="h-3 rounded-full transition-all duration-300" style="width: {{ $avance->porcentaje }}%; background-color: #10b981;"></div>
@@ -141,29 +141,25 @@
                     <table class="w-full border-collapse">
                         <thead>
                             <tr style="background-color: #1b3346;">
-                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300 sticky top-0">ID Trailer</th>
+                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300 sticky top-0">#</th>
                                 <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300 sticky top-0">Modelo</th>
                                 <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300 sticky top-0">Placa</th>
-                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300 sticky top-0">Año</th>
-                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300 sticky top-0">Capacidad (Ton)</th>
-                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300 sticky top-0">Descripción</th>
+                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300 sticky top-0">Número de Serie</th>
                                 <th class="px-4 py-3 text-center font-bold text-white textbase sticky top-0">Estado</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white">
-                            @forelse($trailersDisponibles as $trailer)
+                            @forelse($trailersDisponibles as $index => $trailer)
                                 <tr class="border-b border-gray-300 hover:bg-gray-50 transition-colors duration-200">
-                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailer->id_trailer }}</td>
+                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailersDisponibles->firstItem() + $index }}</td>
                                     <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailer->modelo }}</td>
                                     <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailer->placa }}</td>
-                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailer->año }}</td>
-                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailer->capacidad }}</td>
-                                    <td class="px-4 py-3 text-left text-gray-800 textbase border-r border-gray-300 max-w-xs">{{ $trailer->descripcion }}</td>
+                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailer->numero_serie }}</td>
                                     <td class="px-4 py-3 text-center text-gray-800 textbase"><span class="font-semibold rounded px-3 py-1 text-sm" style="background-color: #dcfce7; color: #166534;">Disponible</span></td>
                                 </tr>
                             @empty
                                 <tr class="border-b border-gray-300">
-                                    <td colspan="7" class="px-4 py-6 text-center text-gray-500">No hay trailers disponibles</td>
+                                    <td colspan="5" class="px-4 py-6 text-center text-gray-500">No hay trailers disponibles</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -207,31 +203,29 @@
                     <table class="w-full border-collapse">
                         <thead>
                             <tr style="background-color: #1b3346;">
-                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300 sticky top-0">ID Trailer</th>
+                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300 sticky top-0">#</th>
                                 <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300 sticky top-0">Modelo</th>
                                 <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300 sticky top-0">Placa</th>
                                 <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300 sticky top-0">Usuario</th>
                                 <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300 sticky top-0">Fecha Inicio</th>
-                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300 sticky top-0">Fecha Devolución</th>
-                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300 sticky top-0">Notas</th>
+                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300 sticky top-0">Fecha Devolución Est.</th>
                                 <th class="px-4 py-3 text-center font-bold text-white textbase sticky top-0">Estado</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white">
-                            @forelse($trailersRentados as $trailer)
+                            @forelse($trailersRentados as $index => $renta)
                                 <tr class="border-b border-gray-300 hover:bg-gray-50 transition-colors duration-200">
-                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailer->id_trailer }}</td>
-                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailer->modelo }}</td>
-                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailer->placa }}</td>
-                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailer->usuario }}</td>
-                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailer->fecha_inicio }}</td>
-                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailer->fecha_devolucion }}</td>
-                                    <td class="px-4 py-3 text-left text-gray-800 textbase border-r border-gray-300 max-w-xs">{{ $trailer->notas }}</td>
+                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailersRentados->firstItem() + $index }}</td>
+                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $renta->trailer?->modelo ?? 'N/A' }}</td>
+                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $renta->trailer?->placa ?? 'N/A' }}</td>
+                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $renta->contratacion?->usuario?->nombre_completo ?? 'N/A' }}</td>
+                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $renta->fecha_renta ? $renta->fecha_renta->format('d/m/Y') : 'N/A' }}</td>
+                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $renta->fecha_devolucion_estimada ? $renta->fecha_devolucion_estimada->format('d/m/Y') : 'N/A' }}</td>
                                     <td class="px-4 py-3 text-center text-gray-800 textbase"><span class="font-semibold rounded px-3 py-1 text-sm" style="background-color: #fee2e2; color: #991b1b;">Rentado</span></td>
                                 </tr>
                             @empty
                                 <tr class="border-b border-gray-300">
-                                    <td colspan="8" class="px-4 py-6 text-center text-gray-500">No hay trailers rentados</td>
+                                    <td colspan="7" class="px-4 py-6 text-center text-gray-500">No hay trailers rentados</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -269,6 +263,11 @@
                         type="text" 
                         placeholder="Buscar por ID o modelo..." 
                         class="px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder-gray-400 text-base w-64">
+                    
+                    <button wire:click="openReporteModal" class="bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg px-6 py-2 transition-all duration-300 text-base" 
+                        style="box-shadow: 0 0 20px rgba(255, 122, 0, 0.6);">
+                        + Nuevo Reporte
+                    </button>
                 </div>
             </div>
 
@@ -277,35 +276,35 @@
                     <table class="w-full border-collapse">
                         <thead>
                             <tr style="background-color: #1b3346;">
-                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">ID Trailer</th>
+                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">#</th>
                                 <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Modelo</th>
                                 <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Placa</th>
-                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Año</th>
+                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Número de Serie</th>
+                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Motivo</th>
                                 <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Estado</th>
-                                <th class="px-4 py-3 text-center font-bold text-white textbase border-r border-gray-300">Reportes</th>
+                                <th class="px-4 py-3 text-center font-bold text-white textbase">Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white">
-                            @forelse($reportes as $reporte)
+                            @forelse($reportes as $index => $trailer)
                                 <tr class="border-b border-gray-300 hover:bg-gray-50 transition-colors duration-200">
-                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $reporte->id_trailer }}</td>
-                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $reporte->modelo }}</td>
-                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $reporte->placa }}</td>
-                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $reporte->año }}</td>
+                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $reportes->firstItem() + $index }}</td>
+                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailer->modelo }}</td>
+                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailer->placa }}</td>
+                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailer->numero_serie }}</td>
+                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailer->motivo_mantenimiento ?? 'Sin especificar' }}</td>
                                     <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300"><span class="font-semibold rounded px-3 py-1 text-sm" style="background-color: #fed7aa; color: #92400e;">En Mantenimiento</span></td>
-                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">
-                                        <button class="text-white font-bold rounded-lg px-4 py-2 transition-all duration-300" 
-                                            style="background-color: #2563EB;"
-                                            onmouseover="this.style.boxShadow='0 0 20px rgba(37, 99, 235, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';"
-                                            onmouseout="this.style.boxShadow='0 0 10px rgba(37, 99, 235, 0.4)'; this.style.transform='translateY(0) scale(1)';"
-                                            onclick="openReportesModal('{{ $reporte->id_trailer }}', '{{ $reporte->modelo }}', '{{ $reporte->placa }}')">
-                                            {{ $reporte->cantidad_reportes }}
+                                    <td class="px-4 py-3 text-center text-gray-800 textbase">
+                                        <button wire:click="cambiarEstadoTrailer('{{ $trailer->id }}', 'disponible')" 
+                                            class="text-white font-bold rounded-lg px-4 py-2 transition-all duration-300" 
+                                            style="background-color: #10b981;">
+                                            Marcar Disponible
                                         </button>
                                     </td>
                                 </tr>
                             @empty
                                 <tr class="border-b border-gray-300">
-                                    <td colspan="6" class="px-4 py-6 text-center text-gray-500">No hay reportes disponibles</td>
+                                    <td colspan="6" class="px-4 py-6 text-center text-gray-500">No hay trailers en mantenimiento</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -320,144 +319,64 @@
             @endif
         </div>
 
-        <!-- Modal de Reportes -->
-        <div id="reportesModal" style="display:none;" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-96 overflow-y-auto">
-                <!-- Header del Modal -->
-                <div style="background-color: #1b3346;" class="px-6 py-4 border-b border-gray-200 flex justify-between items-center sticky top-0">
-                    <h3 class="text-xl font-bold text-white" id="modalTitle">Reportes de Uso y Mantenimiento</h3>
-                    <button onclick="closeReportesModal()" class="text-white hover:text-gray-300 font-bold text-2xl">&times;</button>
+        <!-- Modal para crear reporte de mantenimiento -->
+        @if($showReporteModal)
+        <div class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" @click.away="$wire.closeReporteModal()">
+                <div class="text-white px-8 py-6 sticky top-0 z-10" style="background-color: #1b3346;">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-bold">Reportar Trailer a Mantenimiento</h2>
+                        <button class="text-white text-3xl hover:text-gray-300 transition" wire:click="closeReporteModal">✕</button>
+                    </div>
                 </div>
 
-                <!-- Contenido del Modal -->
-                <div class="p-6">
-                    <!-- Tabs del Modal -->
-                    <div class="flex gap-4 mb-6 border-b border-gray-200">
-                        <button onclick="switchReportTab('historial', this)" class="px-4 py-2 font-bold text-gray-900 border-b-2 border-gray-900" style="border-color: #1b3346;">
-                            Historial de Reportes
-                        </button>
-                        <button onclick="switchReportTab('nuevo', this)" class="px-4 py-2 font-bold text-gray-600 border-b-2 border-transparent hover:text-gray-900">
-                            Crear Nuevo Reporte
-                        </button>
-                    </div>
+                <form wire:submit.prevent="crearReporte" class="p-8">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Seleccionar Trailer *</label>
+                            <select wire:model="reporteForm.trailer_id" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-900 bg-white">
+                                <option value="">Seleccionar trailer...</option>
+                                @foreach($trailersParaReporte as $trailer)
+                                    <option value="{{ $trailer->id }}">{{ $trailer->modelo }} - {{ $trailer->placa }}</option>
+                                @endforeach
+                            </select>
+                            @error('reporteForm.trailer_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                        </div>
 
-                    <!-- Historial de Reportes -->
-                    <div id="tab-historial">
-                        <div class="overflow-x-auto">
-                            <table class="w-full border-collapse">
-                                <thead>
-                                    <tr style="background-color: #f3f4f6;">
-                                        <th class="px-4 py-3 text-left font-bold text-gray-900 text-base border-b border-gray-300">Fecha</th>
-                                        <th class="px-4 py-3 text-left font-bold text-gray-900 textbase border-b border-gray-300">Tipo de Mantenimiento</th>
-                                        <th class="px-4 py-3 text-left font-bold text-gray-900 textbase border-b border-gray-300">Descripción</th>
-                                        <th class="px-4 py-3 text-left font-bold text-gray-900 textbase border-b border-gray-300">Técnico</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                        <td class="px-4 py-3 text-gray-800 text-base">15/11/2024</td>
-                                        <td class="px-4 py-3 text-gray-800 textbase">Inspección General</td>
-                                        <td class="px-4 py-3 text-gray-800 textbase">Inspección de frenos y neumáticos</td>
-                                        <td class="px-4 py-3 text-gray-800 textbase">Juan Rodríguez</td>
-                                    </tr>
-                                    <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                        <td class="px-4 py-3 text-gray-800 textbase">12/11/2024</td>
-                                        <td class="px-4 py-3 text-gray-800 textbase">Cambio de Aceite</td>
-                                        <td class="px-4 py-3 text-gray-800 textbase">Cambio de aceite y filtro</td>
-                                        <td class="px-4 py-3 text-gray-800 textbase">Carlos López</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Motivo del Mantenimiento *</label>
+                            <textarea wire:model="reporteForm.motivo" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-900 bg-white resize-none" rows="4" placeholder="Describe el motivo del mantenimiento..."></textarea>
+                            @error('reporteForm.motivo') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                         </div>
                     </div>
 
-                    <!-- Crear Nuevo Reporte -->
-                    <div id="tab-nuevo" style="display:none;">
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-gray-700 font-bold mb-2">Tipo de Mantenimiento</label>
-                                <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
-                                    <option>Seleccionar tipo de mantenimiento</option>
-                                    <option>Inspección General</option>
-                                    <option>Cambio de Aceite</option>
-                                    <option>Reparación de Frenos</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-gray-700 font-bold mb-2">Descripción del Trabajo</label>
-                                <textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 resize-none" rows="4" placeholder="Describe el trabajo realizado..."></textarea>
-                            </div>
-
-                            <div class="flex gap-4 mt-6">
-                                <button class="flex-1 text-white font-bold rounded-lg px-4 py-2 transition-all duration-300" 
-                                    style="background-color: #10b981;">
-                                    Guardar Reporte
-                                </button>
-                                <button onclick="closeReportesModal()" class="flex-1 text-gray-900 font-bold rounded-lg px-4 py-2 transition-all duration-300 bg-gray-200">
-                                    Cancelar
-                                </button>
-                            </div>
-                        </div>
+                    <div class="flex gap-4 justify-end pt-6 mt-6 border-t-2 border-gray-200">
+                        <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300" wire:click="closeReporteModal">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="text-white font-bold py-2 px-6 rounded-lg transition-all duration-300" style="background-color: #FF7A00;">
+                            Enviar a Mantenimiento
+                        </button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
+        @endif
+
+        <!-- Mensaje de éxito/error -->
+        @if (session()->has('message'))
+            <div class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
+                {{ session('message') }}
+            </div>
+        @endif
+        @if (session()->has('error'))
+            <div class="fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
+                {{ session('error') }}
+            </div>
+        @endif
     </div>
 
     <script>
-        function switchControlTab(tab, el) {
-            const secAvance = document.getElementById('section-avance');
-            const secTrailers = document.getElementById('section-trailers');
-            const secReportes = document.getElementById('section-reportes');
-
-            secAvance.style.display = (tab === 'avance') ? '' : 'none';
-            secTrailers.style.display = (tab === 'trailers') ? '' : 'none';
-            secReportes.style.display = (tab === 'reportes') ? '' : 'none';
-
-            const container = el.parentElement;
-            Array.from(container.querySelectorAll('button')).forEach(b => {
-                b.style.backgroundColor = '#ffffff';
-                b.style.color = '#111827';
-                b.style.boxShadow = '0 0 10px rgba(255, 122, 0, 0.4)';
-            });
-            el.style.backgroundColor = '#FF7A00';
-            el.style.color = '#ffffff';
-            el.style.boxShadow = '0 0 20px rgba(255, 122, 0, 0.6)';
-        }
-
-        function openReportesModal(trailerId, modelo, placa) {
-            document.getElementById('modalTitle').textContent = `Reportes - ${modelo} (${placa})`;
-            document.getElementById('reportesModal').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeReportesModal() {
-            document.getElementById('reportesModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        function switchReportTab(tab, el) {
-            const tabHistorial = document.getElementById('tab-historial');
-            const tabNuevo = document.getElementById('tab-nuevo');
-
-            tabHistorial.style.display = (tab === 'historial') ? '' : 'none';
-            tabNuevo.style.display = (tab === 'nuevo') ? '' : 'none';
-
-            const container = el.parentElement;
-            Array.from(container.querySelectorAll('button')).forEach(b => {
-                b.style.color = '#4b5563';
-                b.style.borderColor = 'transparent';
-            });
-            
-            el.style.color = '#111827';
-            el.style.borderColor = '#1b3346';
-        }
-
-        document.getElementById('reportesModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeReportesModal();
-            }
-        });
+        // Las funciones de tabs ahora son manejadas por Livewire
     </script>
 </div>

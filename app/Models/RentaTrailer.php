@@ -78,6 +78,14 @@ class RentaTrailer extends Model
     }
 
     /**
+     * Accessor: Obtener el usuario de la renta a través de la contratación
+     */
+    public function getUsuarioAttribute()
+    {
+        return $this->contratacion?->usuario;
+    }
+
+    /**
      * Scope: Filtrar rentas activas
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
