@@ -4,9 +4,9 @@ namespace App\Livewire\Manager;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Pagination\Paginator;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
+use App\Models\AvanceLeccion;
+use App\Models\LeccionIndividual;
+use App\Models\Pago;
 
 class Lecciones extends Component
 {
@@ -15,8 +15,21 @@ class Lecciones extends Component
     public $perPage = 10;
     public $search = '';
     public $filtroEstado = '';
+    public $filtroTipo = ''; // curso o individual
 
-    protected $queryString = ['search', 'filtroEstado', 'perPage'];
+    // Para edición
+    public $showModal = false;
+    public $editingId = null;
+    public $editingTipo = null; // 'avance' o 'individual'
+    public $editEstadoAvance = '';
+    public $editObservaciones = '';
+
+    protected $queryString = ['search', 'filtroEstado', 'filtroTipo', 'perPage'];
+
+    protected $rules = [
+        'editEstadoAvance' => 'required|in:pendiente,en_progreso,vista,pagada',
+        'editObservaciones' => 'nullable|string|max:500',
+    ];
 
     public function updatingSearch()
     {
@@ -28,107 +41,186 @@ class Lecciones extends Component
         $this->resetPage();
     }
 
+    public function updatingFiltroTipo()
+    {
+        $this->resetPage();
+    }
+
     public function updatingPerPage()
     {
         $this->resetPage();
     }
 
-    private function paginateCollection($items, $perPage = 15, $page = null, $options = [])
+    /**
+     * Obtener lecciones de avance de cursos
+     */
+    public function getAvancesLeccionesProperty()
     {
-        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
-        $items = $items instanceof Collection ? $items : Collection::make($items);
-        
-        return new LengthAwarePaginator(
-            $items->forPage($page, $perPage)->values(),
-            $items->count(),
-            $perPage,
-            $page,
-            array_merge($options, [
-                'path' => Paginator::resolveCurrentPath(),
-                'query' => Paginator::resolveQueryString(),
-            ])
-        );
+        $query = AvanceLeccion::with([
+            'leccion.curso.contratacion.usuario',
+            'leccion.curso.contratacion.servicio',
+            'contratacion.usuario',
+            'contratacion.servicio',
+            'contratacion.pagos'
+        ]);
+
+        // Búsqueda por nombre de usuario o servicio
+        if (!empty($this->search)) {
+            $search = $this->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('contratacion.usuario', function ($userQuery) use ($search) {
+                    $userQuery->where('nombre_completo', 'ilike', "%{$search}%");
+                })->orWhereHas('contratacion.servicio', function ($serviceQuery) use ($search) {
+                    $serviceQuery->where('nombre_servicio', 'ilike', "%{$search}%");
+                })->orWhereHas('leccion', function ($leccionQuery) use ($search) {
+                    $leccionQuery->where('nombre_leccion', 'ilike', "%{$search}%");
+                });
+            });
+        }
+
+        // Filtro por estado de avance
+        if (!empty($this->filtroEstado)) {
+            $query->where('estado_avance', $this->filtroEstado);
+        }
+
+        return $query->orderBy('created_at', 'desc');
     }
 
-    private function getLecciones()
+    /**
+     * Obtener lecciones individuales
+     */
+    public function getLeccionesIndividualesProperty()
     {
-        return collect([
-            (object)[
-                'id' => 1,
-                'usuario_nombre' => 'Juan Pérez',
-                'servicio_nombre' => 'Manejo Básico',
-                'numero_leccion' => 1,
-                'estado_pago' => 'pagada',
-                'estado_leccion' => 'vista',
-            ],
-            (object)[
-                'id' => 2,
-                'usuario_nombre' => 'María García',
-                'servicio_nombre' => 'Manejo Avanzado',
-                'numero_leccion' => 2,
-                'estado_pago' => 'no_pagada',
-                'estado_leccion' => 'pendiente',
-            ],
-            (object)[
-                'id' => 3,
-                'usuario_nombre' => 'Carlos López',
-                'servicio_nombre' => 'Seguridad',
-                'numero_leccion' => 1,
-                'estado_pago' => 'pagada',
-                'estado_leccion' => 'vista',
-            ],
-            (object)[
-                'id' => 4,
-                'usuario_nombre' => 'Ana Martínez',
-                'servicio_nombre' => 'Manejo Básico',
-                'numero_leccion' => 2,
-                'estado_pago' => 'pagada',
-                'estado_leccion' => 'vista',
-            ],
-            (object)[
-                'id' => 5,
-                'usuario_nombre' => 'Roberto Sánchez',
-                'servicio_nombre' => 'Seguridad',
-                'numero_leccion' => 2,
-                'estado_pago' => 'no_pagada',
-                'estado_leccion' => 'pendiente',
-            ],
+        $query = LeccionIndividual::with([
+            'contratacion.usuario',
+            'contratacion.servicio',
+            'contratacion.pagos'
         ]);
+
+        // Búsqueda por nombre de usuario o servicio
+        if (!empty($this->search)) {
+            $search = $this->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('contratacion.usuario', function ($userQuery) use ($search) {
+                    $userQuery->where('nombre_completo', 'ilike', "%{$search}%");
+                })->orWhereHas('contratacion.servicio', function ($serviceQuery) use ($search) {
+                    $serviceQuery->where('nombre_servicio', 'ilike', "%{$search}%");
+                });
+            });
+        }
+
+        // Filtro por estado de lección
+        if (!empty($this->filtroEstado)) {
+            $query->where('estado_leccion', $this->filtroEstado);
+        }
+
+        return $query->orderBy('fecha_programada', 'desc');
+    }
+
+    /**
+     * Abrir modal para editar
+     */
+    public function editarLeccion($id, $tipo)
+    {
+        $this->editingId = $id;
+        $this->editingTipo = $tipo;
+
+        if ($tipo === 'avance') {
+            $avance = AvanceLeccion::find($id);
+            if ($avance) {
+                $this->editEstadoAvance = $avance->estado_avance;
+                $this->editObservaciones = $avance->leccion?->observaciones ?? '';
+            }
+        } else {
+            $leccion = LeccionIndividual::find($id);
+            if ($leccion) {
+                $this->editEstadoAvance = $leccion->estado_leccion;
+                $this->editObservaciones = $leccion->observaciones ?? '';
+            }
+        }
+
+        $this->showModal = true;
+    }
+
+    /**
+     * Guardar cambios
+     */
+    public function guardarCambios()
+    {
+        $this->validate();
+
+        if ($this->editingTipo === 'avance') {
+            $avance = AvanceLeccion::find($this->editingId);
+            if ($avance) {
+                $avance->update(['estado_avance' => $this->editEstadoAvance]);
+                
+                // Actualizar observaciones en la lección si existe
+                if ($avance->leccion) {
+                    $avance->leccion->update(['observaciones' => $this->editObservaciones]);
+                }
+            }
+        } else {
+            $leccion = LeccionIndividual::find($this->editingId);
+            if ($leccion) {
+                $leccion->update([
+                    'estado_leccion' => $this->editEstadoAvance,
+                    'observaciones' => $this->editObservaciones,
+                ]);
+            }
+        }
+
+        $this->cerrarModal();
+        session()->flash('message', 'Lección actualizada correctamente.');
+    }
+
+    /**
+     * Cerrar modal
+     */
+    public function cerrarModal()
+    {
+        $this->showModal = false;
+        $this->editingId = null;
+        $this->editingTipo = null;
+        $this->editEstadoAvance = '';
+        $this->editObservaciones = '';
+    }
+
+    /**
+     * Determinar estado de pago de una contratación
+     */
+    private function getEstadoPago($contratacion): string
+    {
+        if (!$contratacion) return 'pendiente';
+        
+        $pagos = $contratacion->pagos;
+        if ($pagos->isEmpty()) return 'pendiente';
+        
+        $pagado = $pagos->where('estado_pago', 'pagado')->sum('monto_pagado');
+        $total = $contratacion->servicio?->precio ?? 0;
+        
+        if ($pagado >= $total) return 'pagado';
+        if ($pagado > 0) return 'parcial';
+        return 'pendiente';
     }
 
     public function render()
     {
-        $lecciones = $this->getLecciones();
-
-        // Filtrar por búsqueda (nombre de usuario o servicio)
-        if (!empty($this->search)) {
-            $search = strtolower($this->search);
-            $lecciones = $lecciones->filter(function ($leccion) use ($search) {
-                return stripos($leccion->usuario_nombre, $search) !== false ||
-                       stripos($leccion->servicio_nombre, $search) !== false;
-            });
+        // Determinar qué datos mostrar según el filtro de tipo
+        if ($this->filtroTipo === 'curso') {
+            $lecciones = $this->avancesLecciones->paginate($this->perPage);
+            $tipoActual = 'avance';
+        } elseif ($this->filtroTipo === 'individual') {
+            $lecciones = $this->leccionesIndividuales->paginate($this->perPage);
+            $tipoActual = 'individual';
+        } else {
+            // Mostrar avances de lecciones por defecto (más común)
+            $lecciones = $this->avancesLecciones->paginate($this->perPage);
+            $tipoActual = 'avance';
         }
-
-        // Filtrar por estado (estado_pago o estado_leccion)
-        if (!empty($this->filtroEstado)) {
-            $lecciones = $lecciones->filter(function ($leccion) {
-                // Si el filtro es pagada o no_pagada, filtra por estado_pago
-                if (in_array($this->filtroEstado, ['pagada', 'no_pagada'])) {
-                    return $leccion->estado_pago === $this->filtroEstado;
-                }
-                // Si el filtro es vista o pendiente, filtra por estado_leccion
-                elseif (in_array($this->filtroEstado, ['vista', 'pendiente'])) {
-                    return $leccion->estado_leccion === $this->filtroEstado;
-                }
-                return true;
-            });
-        }
-
-        // Paginar
-        $lecciones = $this->paginateCollection($lecciones, $this->perPage);
 
         return view('livewire.manager.lecciones', [
             'lecciones' => $lecciones,
+            'tipoActual' => $tipoActual,
         ])->layout('layouts.manager');
     }
 }

@@ -1,14 +1,26 @@
 <div>
     <div class="p-6 bg-gray-100 min-h-screen">
         <div class="pb-3 flex items-center justify-center mb-6">
-            <h1 class="text-4xl font-bold text-gray-900">GESTIÓN DE TRÁILERS</h1>
+            <h1 class="text-4xl font-bold text-gray-900">GESTIÓN DE RENTAS DE TRÁILERS</h1>
         </div>
+
+        <!-- Mensajes -->
+        @if (session()->has('message'))
+            <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                {{ session('message') }}
+            </div>
+        @endif
+        @if (session()->has('error'))
+            <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                {{ session('error') }}
+            </div>
+        @endif
 
         <!-- Controles superiores -->
         <div class="flex justify-between items-center mb-6 gap-4 flex-wrap bg-white p-4 rounded-lg shadow-md">
             <div class="flex items-center gap-2">
                 <label class="font-semibold text-gray-900 text-base whitespace-nowrap">Mostrar</label>
-                <select wire:change="$refresh" wire:model="perPage" class="border-2 border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 w-20 bg-white text-gray-900 text-base font-medium">
+                <select wire:model.live="perPage" class="border-2 border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 w-20 bg-white text-gray-900 text-base font-medium">
                     <option value="10">10</option>
                     <option value="25">25</option>
                     <option value="50">50</option>
@@ -18,90 +30,102 @@
             </div>
 
             <div class="flex items-center gap-3 flex-wrap min-w-max">
-                <label class="font-semibold text-gray-900 text-base whitespace-nowrap">Filtro Estado:</label>
-                <select wire:change="$refresh" wire:model="filtroEstado" class="px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white text-gray-900 text-base font-medium w-56">
+                <label class="font-semibold text-gray-900 text-base whitespace-nowrap">Estado:</label>
+                <select wire:model.live="filtroEstado" class="px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white text-gray-900 text-base font-medium w-48">
                     <option value="">Todos</option>
-                    <option value="disponible">Disponible</option>
-                    <option value="rentado">Rentado</option>
-                    <option value="proximo_devolucion">Próximo a Devolución</option>
-                    <option value="pagado">Pagado</option>
-                    <option value="no_pagado">No Pagado</option>
+                    <option value="activa">Activa</option>
+                    <option value="devuelta">Devuelta</option>
+                    <option value="atrasada">Atrasada</option>
                 </select>
             </div>
 
             <div class="flex items-center gap-3 flex-wrap min-w-max">
                 <label class="font-semibold text-gray-900 text-base whitespace-nowrap">Buscar:</label>
-                <input wire:input="$refresh" wire:model="search" 
+                <input wire:model.live.debounce.300ms="search" 
                     type="text" 
-                    placeholder="Nombre del tráiler o cliente..." 
-                    class="px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white text-gray-900 placeholder-gray-400 text-base w-80">
+                    placeholder="Tráiler, placa o cliente..." 
+                    class="px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white text-gray-900 placeholder-gray-400 text-base w-64">
                 
-                <button class="bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg px-6 py-2 transition-all duration-300 text-base" 
+                <button wire:click="abrirModalRenta"
+                    class="bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg px-6 py-2 transition-all duration-300 text-base" 
                     style="box-shadow: 0 0 20px rgba(255, 122, 0, 0.6);"
                     onmouseover="this.style.boxShadow='0 0 25px rgba(255, 122, 0, 0.8)'; this.style.transform='translateY(-2px)';"
-                    onmouseout="this.style.boxShadow='0 0 20px rgba(255, 122, 0, 0.6)'; this.style.transform='translateY(0)';"
-                    onclick="openModalRentar()">
-                    Rentar
+                    onmouseout="this.style.boxShadow='0 0 20px rgba(255, 122, 0, 0.6)'; this.style.transform='translateY(0)';">
+                    + Nueva Renta
                 </button>
             </div>
         </div>
 
-        <!-- Tabla de trailers -->
+        <!-- Tabla de rentas -->
         <div class="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
-            @if($trailers->isEmpty())
+            @if($rentas->isEmpty())
                 <div class="p-12 text-center bg-white">
-                    <p class="text-gray-500 text-base font-medium">No hay tráilers disponibles</p>
+                    <p class="text-gray-500 text-base font-medium">No hay rentas de tráileres registradas</p>
                 </div>
             @else
                 <div class="overflow-x-auto">
                     <table class="w-full border-collapse">
                         <thead>
                             <tr style="background-color: #1b3346;">
-                                <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-300">ID</th>
-                                <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-300">Nombre del Tráiler</th>
+                                <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-300">#</th>
+                                <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-300">Tráiler</th>
+                                <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-300">Placa</th>
+                                <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-300">Cliente</th>
+                                <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-300">Fecha Renta</th>
+                                <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-300">Fecha Devolución Est.</th>
                                 <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-300">Estado</th>
-                                <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-300">Nombre del Cliente</th>
-                                <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-300">Fecha de Renta</th>
-                                <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-300">Fecha de Devolución</th>
-                                <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-300">Pago</th>
-                                <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-300">Acciones</th>
+                                <th class="px-4 py-3 text-center font-bold text-white text-base">Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white">
-                            @foreach($trailers as $index => $trailer)
+                            @foreach($rentas as $index => $renta)
                                 <tr class="border-b border-gray-300 hover:bg-gray-50 transition-colors duration-200">
-                                    <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">{{ str_pad($index + 1, 3, '0', STR_PAD_LEFT) }}</td>
-                                    <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">{{ $trailer->nombre_trailer ?? 'N/A' }}</td>
                                     <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">
-                                        <span class="font-semibold rounded px-4 py-2 text-sm inline-block" 
-                                            style="@if($trailer->estado === 'disponible') background-color: #dcfce7; color: #166534; @elseif($trailer->estado === 'rentado') background-color: #fef3c7; color: #92400e; @elseif($trailer->estado === 'proximo_devolucion') background-color: #fed7aa; color: #92400e; @else background-color: #f3e8ff; color: #6b21a8; @endif">
-                                            {{ ucfirst(str_replace('_', ' ', $trailer->estado ?? 'N/A')) }}
+                                        {{ ($rentas->currentPage() - 1) * $rentas->perPage() + $index + 1 }}
+                                    </td>
+                                    <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">
+                                        {{ $renta->trailer?->modelo ?? 'N/A' }}
+                                    </td>
+                                    <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">
+                                        {{ $renta->trailer?->placa ?? 'N/A' }}
+                                    </td>
+                                    <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">
+                                        {{ $renta->contratacion?->usuario?->nombre_completo ?? 'N/A' }}
+                                    </td>
+                                    <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">
+                                        {{ $renta->fecha_renta ? $renta->fecha_renta->format('d/m/Y') : 'N/A' }}
+                                    </td>
+                                    <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">
+                                        {{ $renta->fecha_devolucion_estimada ? $renta->fecha_devolucion_estimada->format('d/m/Y') : 'N/A' }}
+                                    </td>
+                                    <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">
+                                        <span class="font-semibold rounded px-3 py-1 text-sm"
+                                            style="@if($renta->estado_renta === 'activa') background-color: #3b82f6; color: #ffffff;
+                                                @elseif($renta->estado_renta === 'devuelta') background-color: #10b981; color: #ffffff;
+                                                @elseif($renta->estado_renta === 'atrasada') background-color: #ef4444; color: #ffffff;
+                                                @endif">
+                                            {{ ucfirst($renta->estado_renta ?? 'N/A') }}
                                         </span>
                                     </td>
-                                    @if($trailer->estado !== 'disponible')
-                                        <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">{{ $trailer->nombre_cliente ?? 'N/A' }}</td>
-                                        <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">{{ $trailer->fecha_renta ?? 'N/A' }}</td>
-                                        <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">{{ $trailer->fecha_devolucion ?? 'N/A' }}</td>
-                                        <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">
-                                            <span class="font-semibold rounded px-4 py-2 text-sm inline-block" 
-                                                style="@if($trailer->pago === 'pagado') background-color: #dcfce7; color: #166534; @elseif($trailer->pago === 'no_pagado') background-color: #fee2e2; color: #991b1b; @else background-color: #fef3c7; color: #92400e; @endif">
-                                                {{ ucfirst(str_replace('_', ' ', $trailer->pago ?? 'pendiente')) }}
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-3 text-center border-r border-gray-300">
-                                            <div class="flex gap-2 justify-center items-center">
-                                                <button class="font-bold rounded text-white text-sm py-2 px-5 transition-all duration-300" 
+                                    <td class="px-4 py-3 text-center">
+                                        <div class="flex gap-2 justify-center items-center flex-wrap">
+                                            @if($renta->estado_renta === 'activa')
+                                                <button wire:click="editarRenta('{{ $renta->id }}')"
+                                                    class="font-bold rounded text-white text-sm py-2 px-4 transition-all duration-300" 
                                                     style="background-color: #2563EB;"
-                                                    onmouseover="this.style.boxShadow='0 0 20px rgba(37, 99, 235, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';"
-                                                    onmouseout="this.style.boxShadow='0 0 10px rgba(37, 99, 235, 0.4)'; this.style.transform='translateY(0) scale(1)';"
-                                                    onclick="openModalEditar('{{ $trailer->id }}', '{{ $trailer->nombre_trailer ?? '' }}', '{{ $trailer->estado ?? '' }}', '{{ $trailer->nombre_cliente ?? '' }}', '{{ $trailer->fecha_renta ?? '' }}', '{{ $trailer->fecha_devolucion ?? '' }}', '{{ $trailer->pago ?? '' }}')">
+                                                    onmouseover="this.style.boxShadow='0 0 15px rgba(37, 99, 235, 0.8)';"
+                                                    onmouseout="this.style.boxShadow='none';">
                                                     Editar
                                                 </button>
-                                            </div>
-                                        </td>
-                                    @else
-                                        <td class="px-4 py-3 text-center text-gray-400 text-sm border-r border-gray-300" colspan="4">-</td>
-                                    @endif
+                                                <button wire:click="abrirModalDevolucion('{{ $renta->id }}')"
+                                                    class="font-bold rounded text-white text-sm py-2 px-4 transition-all duration-300 bg-green-600 hover:bg-green-700">
+                                                    Devolver
+                                                </button>
+                                            @else
+                                                <span class="text-gray-400 text-sm">-</span>
+                                            @endif
+                                        </div>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -110,220 +134,164 @@
             @endif
         </div>
 
-        @if(!$trailers->isEmpty())
+        @if(!$rentas->isEmpty())
             <div class="mt-6 flex justify-center">
-                {{ $trailers->links() }}
+                {{ $rentas->links() }}
             </div>
         @endif
 
-        <!-- Modal para rentar tráiler -->
-        <div class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-4" id="modalRentar">
-            <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-                <div class="text-white px-8 py-6 sticky top-0 z-10" style="background-color: #1b3346;">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-2xl font-bold">Nueva Renta de Tráiler</h2>
-                        <button class="text-white text-3xl hover:text-gray-300 transition" onclick="closeModalRentar()">✕</button>
+        <!-- Modal para nueva renta -->
+        @if($showModalRenta)
+            <div class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+                <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <div class="text-white px-8 py-6 sticky top-0 z-10" style="background-color: #1b3346;">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-2xl font-bold">Nueva Renta de Tráiler</h2>
+                            <button wire:click="cerrarModalRenta" class="text-white text-3xl hover:text-gray-300 transition">✕</button>
+                        </div>
                     </div>
-                </div>
 
-                <form id="formRentar" class="p-8">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                        <!-- Columna Izquierda -->
-                        <div>
-                            <div class="mb-6">
-                                <label class="block text-gray-700 font-bold mb-2 text-sm">Seleccionar Tráiler *</label>
-                                <select id="rentarTrailerSelect" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-900 text-sm bg-white" required>
+                    <form wire:submit="crearRenta" class="p-8">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2 text-sm">Tráiler *</label>
+                                <select wire:model="rentaTrailerId" 
+                                    class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-900 text-sm bg-white" required>
                                     <option value="">Seleccione un tráiler</option>
+                                    @foreach($trailersDisponibles as $trailer)
+                                        <option value="{{ $trailer->id }}">{{ $trailer->modelo }} - {{ $trailer->placa }}</option>
+                                    @endforeach
                                 </select>
+                                @error('rentaTrailerId') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
 
-                            <div class="mb-6">
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2 text-sm">Cliente *</label>
+                                <select wire:model="rentaClienteId" 
+                                    class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-900 text-sm bg-white" required>
+                                    <option value="">Seleccione un cliente</option>
+                                    @foreach($clientes as $cliente)
+                                        <option value="{{ $cliente->id }}">{{ $cliente->nombre_completo }}</option>
+                                    @endforeach
+                                </select>
+                                @error('rentaClienteId') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div>
                                 <label class="block text-gray-700 font-bold mb-2 text-sm">Fecha de Renta *</label>
-                                <input type="date" id="rentarFechaRenta" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-900 text-sm bg-white" required>
+                                <input type="date" wire:model="rentaFechaInicio" 
+                                    class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-900 text-sm bg-white" required>
+                                @error('rentaFechaInicio') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
 
-                            <div class="mb-6">
-                                <label class="block text-gray-700 font-bold mb-2 text-sm">Estado del Pago *</label>
-                                <select id="rentarPago" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-900 text-sm bg-white" required>
-                                    <option value="">Seleccione estado</option>
-                                    <option value="pagado">Pagado</option>
-                                    <option value="no_pagado">No Pagado</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Columna Derecha -->
-                        <div>
-                            <div class="mb-6">
-                                <label class="block text-gray-700 font-bold mb-2 text-sm">Nombre del Cliente *</label>
-                                <input type="text" id="rentarNombreCliente" placeholder="Ingrese nombre del cliente" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-900 text-sm bg-white" required>
-                            </div>
-
-                            <div class="mb-6">
-                                <label class="block text-gray-700 font-bold mb-2 text-sm">Fecha de Devolución *</label>
-                                <input type="date" id="rentarFechaDevolucion" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-900 text-sm bg-white" required>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-2 text-sm">Fecha Devolución Estimada *</label>
+                                <input type="date" wire:model="rentaFechaDevolucion" 
+                                    class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-900 text-sm bg-white" required>
+                                @error('rentaFechaDevolucion') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
                         </div>
-                    </div>
 
-                    <div class="flex gap-4 justify-end pt-6 border-t-2 border-gray-200">
-                        <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 text-sm" onclick="closeModalRentar()">
-                            Cancelar
-                        </button>
-                        <button type="submit" class="text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 text-sm" 
-                            style="background-color: #FF7A00;"
-                            onmouseover="this.style.boxShadow='0 0 25px rgba(255, 122, 0, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';"
-                            onmouseout="this.style.boxShadow='0 0 10px rgba(255, 122, 0, 0.4)'; this.style.transform='translateY(0) scale(1)';">
-                            Crear Renta
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Modal para editar tráiler -->
-        <div class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-4" id="modalEditarTrailer">
-            <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-                <div class="text-white px-8 py-6 sticky top-0 z-10" style="background-color: #1b3346;">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-2xl font-bold">Editar Tráiler</h2>
-                        <button class="text-white text-3xl hover:text-gray-300 transition" onclick="closeModalEditar()">✕</button>
-                    </div>
+                        <div class="flex gap-4 justify-end pt-6 border-t-2 border-gray-200">
+                            <button type="button" wire:click="cerrarModalRenta" 
+                                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 text-sm">
+                                Cancelar
+                            </button>
+                            <button type="submit" 
+                                class="text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 text-sm" 
+                                style="background-color: #FF7A00;">
+                                Crear Renta
+                            </button>
+                        </div>
+                    </form>
                 </div>
-
-                <form id="formEditar" class="p-8">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                        <!-- Columna Izquierda -->
-                        <div>
-                            <div class="mb-6 pb-4 border-b border-gray-200">
-                                <p class="text-gray-600 text-xs font-semibold uppercase mb-1">Nombre del Tráiler</p>
-                                <p class="text-gray-900 text-lg font-bold" id="infoNombreTrailer">Trailer 001</p>
-                            </div>
-
-                            <div class="mb-6">
-                                <label class="block text-gray-700 font-semibold mb-2 text-xs uppercase">Fecha de Renta *</label>
-                                <input type="date" id="infoFechaRenta" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-900 text-sm bg-white" required>
-                            </div>
-
-                            <div class="mb-6">
-                                <label class="block text-gray-700 font-bold mb-2 text-sm">Estado *</label>
-                                <select id="editarEstado" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-900 text-sm bg-white" required>
-                                    <option value="disponible">Disponible</option>
-                                    <option value="rentado">Rentado</option>
-                                    <option value="proximo_devolucion">Próximo a Devolución</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Columna Derecha -->
-                        <div>
-                            <div class="mb-6 pb-4 border-b border-gray-200">
-                                <p class="text-gray-600 text-xs font-semibold uppercase mb-1">Cliente</p>
-                                <p class="text-gray-900 text-lg font-bold" id="infoNombreCliente">Juan Pérez López</p>
-                            </div>
-
-                            <div class="mb-6">
-                                <label class="block text-gray-700 font-semibold mb-2 text-xs uppercase">Fecha de Devolución *</label>
-                                <input type="date" id="infoFechaDevolucion" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-900 text-sm bg-white" required>
-                            </div>
-
-                            <div class="mb-6">
-                                <label class="block text-gray-700 font-bold mb-2 text-sm">Estado del Pago *</label>
-                                <select id="editarPago" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-900 text-sm bg-white" required>
-                                    <option value="pagado">Pagado</option>
-                                    <option value="no_pagado">No Pagado</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-4 justify-end pt-6 border-t-2 border-gray-200">
-                        <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 text-sm" onclick="closeModalEditar()">
-                            Cancelar
-                        </button>
-                        <button type="submit" class="text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 text-sm" 
-                            style="background-color: #FF7A00;"
-                            onmouseover="this.style.boxShadow='0 0 25px rgba(255, 122, 0, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';"
-                            onmouseout="this.style.boxShadow='0 0 10px rgba(255, 122, 0, 0.4)'; this.style.transform='translateY(0) scale(1)';">
-                            Guardar Cambios
-                        </button>
-                    </div>
-                </form>
             </div>
-        </div>
+        @endif
+
+        <!-- Modal para editar renta -->
+        @if($showModalEditar)
+            <div class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+                <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                    <div class="text-white px-8 py-6 sticky top-0 z-10" style="background-color: #1b3346;">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-2xl font-bold">Editar Renta</h2>
+                            <button wire:click="cerrarModalEditar" class="text-white text-3xl hover:text-gray-300 transition">✕</button>
+                        </div>
+                    </div>
+
+                    <form wire:submit="guardarCambiosRenta" class="p-8">
+                        <div class="mb-6">
+                            <label class="block text-gray-700 font-bold mb-2 text-sm">Fecha Devolución Estimada *</label>
+                            <input type="date" wire:model="editFechaDevolucion" 
+                                class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-900 text-sm bg-white" required>
+                            @error('editFechaDevolucion') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="mb-6">
+                            <label class="block text-gray-700 font-bold mb-2 text-sm">Estado de la Renta *</label>
+                            <select wire:model="editEstadoRenta" 
+                                class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-900 text-sm bg-white" required>
+                                <option value="activa">Activa</option>
+                                <option value="devuelta">Devuelta</option>
+                                <option value="atrasada">Atrasada</option>
+                            </select>
+                            @error('editEstadoRenta') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="flex gap-4 justify-end pt-6 border-t-2 border-gray-200">
+                            <button type="button" wire:click="cerrarModalEditar" 
+                                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 text-sm">
+                                Cancelar
+                            </button>
+                            <button type="submit" 
+                                class="text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 text-sm" 
+                                style="background-color: #FF7A00;">
+                                Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endif
+
+        <!-- Modal para devolución -->
+        @if($showModalDevolucion)
+            <div class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+                <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                    <div class="text-white px-8 py-6 sticky top-0 z-10" style="background-color: #1b3346;">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-2xl font-bold">Registrar Devolución</h2>
+                            <button wire:click="cerrarModalDevolucion" class="text-white text-3xl hover:text-gray-300 transition">✕</button>
+                        </div>
+                    </div>
+
+                    <form wire:submit="marcarDevolucion" class="p-8">
+                        <div class="mb-6">
+                            <label class="block text-gray-700 font-bold mb-2 text-sm">Fecha Real de Devolución *</label>
+                            <input type="date" wire:model="devolucionFechaReal" 
+                                class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-900 text-sm bg-white" required>
+                            @error('devolucionFechaReal') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg mb-6">
+                            <p class="text-yellow-800 text-sm">
+                                ⚠️ Al registrar la devolución, el tráiler quedará disponible nuevamente para rentar.
+                            </p>
+                        </div>
+
+                        <div class="flex gap-4 justify-end pt-6 border-t-2 border-gray-200">
+                            <button type="button" wire:click="cerrarModalDevolucion" 
+                                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 text-sm">
+                                Cancelar
+                            </button>
+                            <button type="submit" 
+                                class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition-all duration-300 text-sm">
+                                Confirmar Devolución
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endif
     </div>
-
-    <script>
-        // Datos de trailers disponibles (sin rentar)
-        const trailersDisponibles = [
-            { id: 1, nombre: 'Trailer 001' },
-            { id: 4, nombre: 'Trailer 004' },
-        ];
-
-        function openModalRentar() {
-            // Llenar el select con trailers disponibles
-            const select = document.getElementById('rentarTrailerSelect');
-            select.innerHTML = '<option value="">Seleccione un tráiler</option>';
-            
-            trailersDisponibles.forEach(trailer => {
-                const option = document.createElement('option');
-                option.value = trailer.id;
-                option.textContent = trailer.nombre;
-                select.appendChild(option);
-            });
-
-            document.getElementById('modalRentar').classList.remove('hidden');
-        }
-
-        function closeModalRentar() {
-            document.getElementById('modalRentar').classList.add('hidden');
-        }
-
-        function openModalEditar(id, nombreTrailer, estado, nombreCliente, fechaRenta, fechaDevolucion, pago) {
-            document.getElementById('infoNombreTrailer').textContent = nombreTrailer;
-            document.getElementById('infoNombreCliente').textContent = nombreCliente;
-            document.getElementById('infoFechaRenta').value = fechaRenta;
-            document.getElementById('infoFechaDevolucion').value = fechaDevolucion;
-            
-            document.getElementById('editarEstado').value = estado;
-            document.getElementById('editarPago').value = pago;
-
-            document.getElementById('modalEditarTrailer').classList.remove('hidden');
-        }
-
-        function closeModalEditar() {
-            document.getElementById('modalEditarTrailer').classList.add('hidden');
-        }
-
-        document.getElementById('formRentar')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const trailer = document.getElementById('rentarTrailerSelect').value;
-            const cliente = document.getElementById('rentarNombreCliente').value;
-            const fechaRenta = document.getElementById('rentarFechaRenta').value;
-            const fechaDevolucion = document.getElementById('rentarFechaDevolucion').value;
-            const pago = document.getElementById('rentarPago').value;
-
-            alert('Renta creada exitosamente!\n\nTráiler: ' + trailer + '\nCliente: ' + cliente + '\nFecha Renta: ' + fechaRenta + '\nFecha Devolución: ' + fechaDevolucion + '\nPago: ' + pago);
-            closeModalRentar();
-        });
-
-        document.getElementById('formEditar')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const estado = document.getElementById('editarEstado').value;
-            const pago = document.getElementById('editarPago').value;
-            const fechaRenta = document.getElementById('infoFechaRenta').value;
-            const fechaDevolucion = document.getElementById('infoFechaDevolucion').value;
-
-            alert('Cambios guardados exitosamente!\n\nEstado: ' + estado + '\nPago: ' + pago + '\nFecha Renta: ' + fechaRenta + '\nFecha Devolución: ' + fechaDevolucion);
-            closeModalEditar();
-        });
-
-        document.getElementById('modalRentar')?.addEventListener('click', function(e) {
-            if (e.target === this) closeModalRentar();
-        });
-
-        document.getElementById('modalEditarTrailer')?.addEventListener('click', function(e) {
-            if (e.target === this) closeModalEditar();
-        });
-    </script>
 </div>
