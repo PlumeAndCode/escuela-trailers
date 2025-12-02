@@ -46,68 +46,62 @@
     </div>
 
     <!-- Contenido principal -->
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">DriveMaster Pro</h1>
-            <h2 class="text-xl text-gray-600 mt-2">CLIENTE</h2>
-        </div>
-
+    <div class="p-6 bg-gray-100 min-h-screen">
         <!-- Page Title -->
-        <div class="mb-6">
-            <h3 class="text-2xl font-bold text-gray-800">HISTORIAL DE PAGO</h3>
+        <div class="pb-3 flex items-center justify-center mb-6">
+            <h1 class="text-4xl font-bold text-gray-900">Historial de Pago</h1>
         </div>
 
         <!-- Filters -->
-        <div class="bg-white rounded-lg shadow-md p-4 mb-6">
-            <div class="flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <input 
-                        type="text" 
-                        wire:model.live.debounce.300ms="search"
-                        placeholder="Buscar por servicio..."
-                        class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-amber-500"
-                    >
-                </div>
-                <div>
-                    <select 
-                        wire:model.live="filtroEstado"
-                        class="px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-amber-500"
-                    >
-                        <option value="">Todos los estados</option>
-                        <option value="pendiente">Pendientes</option>
-                        <option value="pagado">Pagados</option>
-                        <option value="vencido">Vencidos</option>
-                    </select>
-                </div>
+        <div class="flex justify-between items-center mb-6 gap-4 flex-wrap bg-white p-4 rounded-lg shadow-md">
+            <div class="flex items-center gap-2">
+                <label class="font-semibold text-gray-900 text-base whitespace-nowrap">Buscar:</label>
+                <input 
+                    type="text" 
+                    wire:model.live.debounce.300ms="search"
+                    placeholder="Buscar por servicio..."
+                    class="px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white text-gray-900 placeholder-gray-400 text-base w-80"
+                >
+            </div>
+            <div class="flex items-center gap-3">
+                <label class="font-semibold text-gray-900 text-base whitespace-nowrap">Estado:</label>
+                <select 
+                    wire:model.live="filtroEstado"
+                    class="px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white text-gray-900 text-base font-medium w-48"
+                >
+                    <option value="">Todos los estados</option>
+                    <option value="pendiente">Pendientes</option>
+                    <option value="pagado">Pagados</option>
+                    <option value="vencido">Vencidos</option>
+                </select>
             </div>
         </div>
 
         <!-- Payment Table -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
             <div class="overflow-x-auto">
-                <table class="w-full table-fixed">
-                    <thead class="bg-slate-900 text-white">
-                        <tr>
-                            <th class="w-[10%] py-4 px-6 text-center font-semibold">ID</th>
-                            <th class="w-[25%] py-4 px-6 text-center font-semibold">SERVICIO</th>
-                            <th class="w-[15%] py-4 px-6 text-center font-semibold">FECHA</th>
-                            <th class="w-[15%] py-4 px-6 text-center font-semibold">MONTO</th>
-                            <th class="w-[15%] py-4 px-6 text-center font-semibold">ACCIONES</th>
-                            <th class="w-[15%] py-4 px-6 text-center font-semibold">ESTADO</th>
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr style="background-color: #1b3346;">
+                            <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-600">#</th>
+                            <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-600">Servicio</th>
+                            <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-600">Fecha</th>
+                            <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-600">Monto</th>
+                            <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-600">Acciones</th>
+                            <th class="px-4 py-3 text-center font-bold text-white text-base">Estado</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="bg-white">
                         @forelse($pagos as $index => $pago)
                         @php
                             $estaVencido = $pago->estado_pago === 'pendiente' && $pago->fecha_pago < now();
                         @endphp
-                        <tr class="border-b border-gray-200 hover:bg-gray-50">
-                            <td class="py-4 px-6 text-center font-semibold text-gray-800">{{ str_pad($index + 1, 3, '0', STR_PAD_LEFT) }}</td>
-                            <td class="py-4 px-6 text-center text-gray-700">{{ $pago->contratacion->servicio->nombre_servicio ?? 'N/A' }}</td>
-                            <td class="py-4 px-6 text-center text-gray-700">{{ $pago->fecha_pago->format('d/m/Y') }}</td>
-                            <td class="py-4 px-6 text-center font-medium text-gray-800">${{ number_format($pago->monto_pagado, 2) }}</td>
-                            <td class="py-4 px-6 text-center">
+                        <tr class="border-b border-gray-300 hover:bg-gray-50 transition-colors duration-200">
+                            <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">{{ $index + 1 }}</td>
+                            <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">{{ $pago->contratacion->servicio->nombre_servicio ?? 'N/A' }}</td>
+                            <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">{{ $pago->fecha_pago->format('d/m/Y') }}</td>
+                            <td class="px-4 py-3 text-center text-gray-800 text-base font-medium border-r border-gray-300">${{ number_format($pago->monto_pagado, 2) }}</td>
+                            <td class="px-4 py-3 text-center border-r border-gray-300">
                                 @if($pago->estado_pago === 'pagado')
                                     <button 
                                         wire:click="descargarComprobante('{{ $pago->id }}')"
@@ -120,14 +114,14 @@
                                     <span class="text-gray-400">-</span>
                                 @endif
                             </td>
-                            <td class="py-4 px-6 text-center">
+                            <td class="px-4 py-3 text-center">
                                 @if($pago->estado_pago === 'pagado')
-                                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                    <span class="font-semibold rounded px-4 py-2 text-sm" style="background-color: #10b981; color: #ffffff;">
                                         Pagado
                                     </span>
                                 @elseif($estaVencido || $pago->estado_pago === 'vencido')
                                     <div class="flex flex-col items-center gap-1">
-                                        <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                        <span class="font-semibold rounded px-4 py-2 text-sm" style="background-color: #ef4444; color: #ffffff;">
                                             Vencido
                                         </span>
                                         <button 
@@ -140,8 +134,10 @@
                                 @else
                                     <button 
                                         wire:click="openPaymentModal('{{ $pago->id }}')"
-                                        class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200"
-                                    >
+                                        class="font-bold rounded text-white text-sm py-2 px-5 transition-all duration-300" 
+                                        style="background-color: #FF7A00;"
+                                        onmouseover="this.style.boxShadow='0 0 20px rgba(255, 122, 0, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';"
+                                        onmouseout="this.style.boxShadow='0 0 10px rgba(255, 122, 0, 0.4)'; this.style.transform='translateY(0) scale(1)';">
                                         Pagar
                                     </button>
                                 @endif
@@ -149,9 +145,9 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="py-8 text-center text-gray-500">
-                                <i class="fas fa-receipt text-4xl mb-3"></i>
-                                <p>No tienes pagos registrados</p>
+                            <td colspan="6" class="p-12 text-center bg-white">
+                                <i class="fas fa-receipt text-gray-300 text-5xl mb-4"></i>
+                                <p class="text-gray-500 text-base font-medium">No tienes pagos registrados</p>
                             </td>
                         </tr>
                         @endforelse
@@ -162,7 +158,7 @@
 
         <!-- Pagination -->
         @if($pagos->hasPages())
-        <div class="mt-6">
+        <div class="mt-6 flex justify-center">
             {{ $pagos->links() }}
         </div>
         @endif

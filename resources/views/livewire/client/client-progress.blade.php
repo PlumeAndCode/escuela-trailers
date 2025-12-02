@@ -1,4 +1,4 @@
-<div class="max-w-7xl mx-auto"
+<div class="p-6 bg-gray-100 min-h-screen"
     x-data="{ 
         toasts: [],
         addToast(toast) {
@@ -45,27 +45,22 @@
         </template>
     </div>
 
-    <!-- Header -->
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">DriveMaster Pro</h1>
-        <h2 class="text-xl text-gray-600 mt-2">CLIENTE</h2>
+    <!-- Page Title -->
+    <div class="pb-3 flex items-center justify-center mb-6">
+        <h1 class="text-4xl font-bold text-gray-900">AVANCE Y PROGRAMA DE ESTUDIO</h1>
     </div>
 
-    <!-- Page Title -->
-    <div class="mb-6">
-        <h3 class="text-2xl font-bold text-gray-800">AVANCE Y PROGRAMA DE ESTUDIO</h3>
-        <p class="text-gray-600 mt-2">Seguimiento de tu progreso en los cursos</p>
-    </div>
+    <p class="text-gray-600 text-center mb-6">Seguimiento de tu progreso en los cursos</p>
 
     <!-- Filter by Course -->
     @if($cursos->count() > 1)
-    <div class="bg-white rounded-lg shadow-md p-4 mb-6">
-        <div class="flex items-center gap-4">
-            <label class="font-semibold text-gray-700">Filtrar por curso:</label>
+    <div class="flex justify-between items-center mb-6 gap-4 flex-wrap bg-white p-4 rounded-lg shadow-md">
+        <div class="flex items-center gap-3">
+            <label class="font-semibold text-gray-900 text-base whitespace-nowrap">Filtrar por curso:</label>
             <select 
                 wire:model.live="cursoSeleccionado"
                 wire:change="filtrarPorCurso($event.target.value)"
-                class="px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-amber-500"
+                class="px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white text-gray-900 text-base font-medium w-64"
             >
                 <option value="">Todos los cursos</option>
                 @foreach($cursos as $curso)
@@ -77,10 +72,10 @@
     @endif
 
     <!-- Progress Bar -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+    <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-6 mb-8">
         <div class="flex justify-between items-center mb-2">
-            <span class="text-sm font-semibold text-gray-700">Progreso General</span>
-            <span class="text-sm font-bold text-amber-600">{{ $porcentajeGeneral }}%</span>
+            <span class="text-base font-bold text-gray-900">Progreso General</span>
+            <span class="text-base font-bold text-amber-600">{{ $porcentajeGeneral }}%</span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-4">
             <div class="bg-amber-500 h-4 rounded-full transition-all duration-500" style="width: {{ $porcentajeGeneral }}%"></div>

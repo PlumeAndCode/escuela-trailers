@@ -1,4 +1,4 @@
-<div class="max-w-7xl mx-auto"
+<div class="p-6 bg-gray-100 min-h-screen"
     x-data="{ 
         toasts: [],
         addToast(toast) {
@@ -51,48 +51,57 @@
         </template>
     </div>
 
-    <!-- Header -->
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">DriveMaster Pro</h1>
-        <h2 class="text-xl text-gray-600 mt-2">CLIENTE</h2>
+    <!-- Page Title -->
+    <div class="pb-3 flex items-center justify-center mb-6">
+        <h1 class="text-4xl font-bold text-gray-900">PANEL DE CLIENTE</h1>
     </div>
 
     <!-- Welcome Section -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+    <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-6 mb-8">
         <h3 class="text-2xl font-semibold text-gray-800 mb-4">Bienvenido, {{ auth()->user()->nombre_completo ?? 'Cliente' }}</h3>
         <p class="text-gray-600">Aquí puedes gestionar tus servicios, ver tu progreso y realizar pagos.</p>
     </div>
 
     <!-- Quick Stats -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-amber-50 border border-amber-200 rounded-lg p-6">
-            <h4 class="text-lg font-semibold text-amber-800 mb-2">Servicios Activos</h4>
-            <p class="text-2xl font-bold text-amber-600">{{ $serviciosActivos }}</p>
+        <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
+            <h4 class="text-lg font-bold text-gray-900 mb-2">Servicios Activos</h4>
+            <p class="text-3xl font-bold text-amber-600">{{ $serviciosActivos }}</p>
         </div>
-        <div class="bg-green-50 border border-green-200 rounded-lg p-6">
-            <h4 class="text-lg font-semibold text-green-800 mb-2">Lecciones Completadas</h4>
-            <p class="text-2xl font-bold text-green-600">{{ $porcentajeAvance }}%</p>
+        <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
+            <h4 class="text-lg font-bold text-gray-900 mb-2">Lecciones Completadas</h4>
+            <p class="text-3xl font-bold text-green-600">{{ $porcentajeAvance }}%</p>
         </div>
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
-            <h4 class="text-lg font-semibold text-blue-800 mb-2">Próximo Pago</h4>
-            <p class="text-2xl font-bold text-blue-600">
+        <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
+            <h4 class="text-lg font-bold text-gray-900 mb-2">Próximo Pago</h4>
+            <p class="text-3xl font-bold text-blue-600">
                 @if($proximoPago)
                     {{ $proximoPago->fecha_pago->format('d/m/Y') }}
                 @else
-                    <span class="text-sm">Sin pagos pendientes</span>
+                    <span class="text-base">Sin pagos pendientes</span>
                 @endif
             </p>
         </div>
     </div>
 
     <!-- Quick Actions -->
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <h4 class="text-xl font-semibold text-gray-800 mb-4">Acciones Rápidas</h4>
+    <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
+        <h4 class="text-xl font-bold text-gray-900 mb-4">Acciones Rápidas</h4>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <a href="{{ route('client.payment-history') }}" class="bg-amber-500 hover:bg-amber-600 text-white py-3 px-4 rounded-lg text-center font-semibold transition-colors">
+            <a href="{{ route('client.payment-history') }}" 
+                class="font-bold rounded text-white text-base py-3 px-4 text-center transition-all duration-300" 
+                style="background-color: #FF7A00;"
+                onmouseover="this.style.boxShadow='0 0 20px rgba(255, 122, 0, 0.8)'; this.style.transform='translateY(-2px) scale(1.02)';"
+                onmouseout="this.style.boxShadow='0 0 10px rgba(255, 122, 0, 0.4)'; this.style.transform='translateY(0) scale(1)';">
+                <i class="fas fa-credit-card mr-2"></i>
                 Realizar Pago
             </a>
-            <a href="{{ route('client.progress') }}" class="bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg text-center font-semibold transition-colors">
+            <a href="{{ route('client.progress') }}" 
+                class="font-bold rounded text-white text-base py-3 px-4 text-center transition-all duration-300" 
+                style="background-color: #10b981;"
+                onmouseover="this.style.boxShadow='0 0 20px rgba(16, 185, 129, 0.8)'; this.style.transform='translateY(-2px) scale(1.02)';"
+                onmouseout="this.style.boxShadow='0 0 10px rgba(16, 185, 129, 0.4)'; this.style.transform='translateY(0) scale(1)';">
+                <i class="fas fa-chart-line mr-2"></i>
                 Ver Mi Progreso
             </a>
         </div>
