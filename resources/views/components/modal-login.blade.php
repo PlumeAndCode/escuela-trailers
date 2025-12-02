@@ -42,15 +42,22 @@
                 </div>
                 
                 <!-- Password Input -->
-                <div class="relative mb-5 w-full">
+                <div class="relative mb-5 w-full" x-data="{ showPassword: false }">
                     <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
                     <input 
-                        type="password" 
+                        :type="showPassword ? 'text' : 'password'" 
                         name="password"
                         placeholder="Contraseña" 
                         required
-                        class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:border-amber-600 focus:bg-white transition-all"
+                        class="w-full pl-12 pr-12 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:border-amber-600 focus:bg-white transition-all"
                     >
+                    <button 
+                        type="button" 
+                        @click="showPassword = !showPassword"
+                        class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-amber-600 transition-colors"
+                    >
+                        <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                    </button>
                 </div>
                 
                 <!-- Options -->
@@ -152,27 +159,41 @@
                 </div>
                 
                 <!-- Password Input -->
-                <div class="relative mb-4 w-full">
+                <div class="relative mb-4 w-full" x-data="{ showPassword: false }">
                     <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
                     <input 
-                        type="password" 
+                        :type="showPassword ? 'text' : 'password'" 
                         name="password"
                         placeholder="Contraseña" 
                         required
-                        class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:border-amber-600 focus:bg-white transition-all"
+                        class="w-full pl-12 pr-12 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:border-amber-600 focus:bg-white transition-all"
                     >
+                    <button 
+                        type="button" 
+                        @click="showPassword = !showPassword"
+                        class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-amber-600 transition-colors"
+                    >
+                        <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                    </button>
                 </div>
                 
                 <!-- Confirm Password Input -->
-                <div class="relative mb-6 w-full">
+                <div class="relative mb-6 w-full" x-data="{ showPassword: false }">
                     <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
                     <input 
-                        type="password" 
+                        :type="showPassword ? 'text' : 'password'" 
                         name="password_confirmation"
                         placeholder="Confirmar contraseña" 
                         required
-                        class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:border-amber-600 focus:bg-white transition-all"
+                        class="w-full pl-12 pr-12 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:border-amber-600 focus:bg-white transition-all"
                     >
+                    <button 
+                        type="button" 
+                        @click="showPassword = !showPassword"
+                        class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-amber-600 transition-colors"
+                    >
+                        <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                    </button>
                 </div>
                 
                 <!-- Terms Checkbox -->
