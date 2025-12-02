@@ -45,94 +45,96 @@
         </template>
     </div>
 
-    <div class="max-w-7xl mx-auto">
-        <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">DriveMaster Pro</h1>
-            <h2 class="text-xl text-gray-600 mt-2">CLIENTE</h2>
+    <div class="p-6 bg-gray-100 min-h-screen">
+        <!-- Page Title -->
+        <div class="pb-3 flex items-center justify-center mb-6">
+            <h1 class="text-4xl font-bold text-gray-900">Servicios Contratados</h1>
         </div>
 
-        <!-- Page Title and Add Button -->
+        <!-- Page Subtitle and Add Button -->
         <div class="flex justify-between items-center mb-6">
-            <div>
-                <h3 class="text-2xl font-bold text-gray-800">Servicios contratados</h3>
-                <p class="text-gray-600 mt-2">Aquí puedes ver tus servicios activos y próximos pagos o vencimientos</p>
-            </div>
-            <button wire:click="openAddModal" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center">
+            <p class="text-gray-600">Aquí puedes ver tus servicios activos y próximos pagos o vencimientos</p>
+            <button wire:click="openAddModal" 
+                class="font-bold rounded text-white text-sm py-2 px-5 transition-all duration-300 flex items-center" 
+                style="background-color: #10b981;"
+                onmouseover="this.style.boxShadow='0 0 20px rgba(16, 185, 129, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';"
+                onmouseout="this.style.boxShadow='0 0 10px rgba(16, 185, 129, 0.4)'; this.style.transform='translateY(0) scale(1)';">
                 <i class="fas fa-plus mr-2"></i>
                 Añadir Servicios
             </button>
         </div>
 
         <!-- Filters -->
-        <div class="bg-white rounded-lg shadow-md p-4 mb-6">
-            <div class="flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <input 
-                        type="text" 
-                        wire:model.live.debounce.300ms="search"
-                        placeholder="Buscar por nombre de servicio..."
-                        class="w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-amber-500"
-                    >
-                </div>
-                <div>
-                    <select 
-                        wire:model.live="filtroEstado"
-                        class="px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-amber-500"
-                    >
-                        <option value="">Todos los estados</option>
-                        <option value="activo">Activos</option>
-                        <option value="cancelado">Cancelados</option>
-                        <option value="completado">Completados</option>
-                    </select>
-                </div>
+        <div class="flex justify-between items-center mb-6 gap-4 flex-wrap bg-white p-4 rounded-lg shadow-md">
+            <div class="flex items-center gap-2">
+                <label class="font-semibold text-gray-900 text-base whitespace-nowrap">Buscar:</label>
+                <input 
+                    type="text" 
+                    wire:model.live.debounce.300ms="search"
+                    placeholder="Buscar por nombre de servicio..."
+                    class="px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white text-gray-900 placeholder-gray-400 text-base w-80"
+                >
+            </div>
+            <div class="flex items-center gap-3">
+                <label class="font-semibold text-gray-900 text-base whitespace-nowrap">Estado:</label>
+                <select 
+                    wire:model.live="filtroEstado"
+                    class="px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white text-gray-900 text-base font-medium w-48"
+                >
+                    <option value="">Todos los estados</option>
+                    <option value="activo">Activos</option>
+                    <option value="cancelado">Cancelados</option>
+                    <option value="completado">Completados</option>
+                </select>
             </div>
         </div>
 
         <!-- Services Table -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
-            <table class="w-full table-fixed">
-                <thead class="bg-slate-900 text-white">
-                    <tr>
-                        <th class="w-[8%] py-3 px-4 text-center font-semibold">ID</th>
-                        <th class="w-[27%] py-3 px-4 text-center font-semibold">SERVICIO</th>
-                        <th class="w-[15%] py-3 px-4 text-center font-semibold">FECHA INICIO</th>
-                        <th class="w-[15%] py-3 px-4 text-center font-semibold">ESTADO</th>
-                        <th class="w-[15%] py-3 px-4 text-center font-semibold">PRÓXIMO PAGO</th>
-                        <th class="w-[20%] py-3 px-4 text-center font-semibold">ACCIONES</th>
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 mb-6">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr style="background-color: #1b3346;">
+                        <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-600">#</th>
+                        <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-600">Servicio</th>
+                        <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-600">Fecha Inicio</th>
+                        <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-600">Estado</th>
+                        <th class="px-4 py-3 text-center font-bold text-white text-base border-r border-gray-600">Próximo Pago</th>
+                        <th class="px-4 py-3 text-center font-bold text-white text-base">Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="bg-white">
                     @forelse($contrataciones as $index => $contratacion)
-                    <tr class="border-b border-gray-200 hover:bg-gray-50">
-                        <td class="py-4 px-4 text-center font-semibold">{{ str_pad($index + 1, 3, '0', STR_PAD_LEFT) }}</td>
-                        <td class="py-4 px-4 text-center">
-                            <div class="font-semibold">{{ $contratacion->servicio->nombre_servicio ?? 'N/A' }}</div>
+                    <tr class="border-b border-gray-300 hover:bg-gray-50 transition-colors duration-200">
+                        <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">{{ $index + 1 }}</td>
+                        <td class="px-4 py-3 text-center border-r border-gray-300">
+                            <div class="font-semibold text-gray-800">{{ $contratacion->servicio->nombre_servicio ?? 'N/A' }}</div>
                             <div class="text-sm text-gray-600">{{ Str::limit($contratacion->servicio->descripcion ?? '', 50) }}</div>
                         </td>
-                        <td class="py-4 px-4 text-center">{{ $contratacion->fecha_contratacion->format('d/m/Y') }}</td>
-                        <td class="py-4 px-4 text-center">
+                        <td class="px-4 py-3 text-center text-gray-800 text-base border-r border-gray-300">{{ $contratacion->fecha_contratacion->format('d/m/Y') }}</td>
+                        <td class="px-4 py-3 text-center border-r border-gray-300">
                             @if($contratacion->estado_contratacion === 'activo')
-                                <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">Activo</span>
+                                <span class="font-semibold rounded px-4 py-2 text-sm" style="background-color: #10b981; color: #ffffff;">Activo</span>
                             @elseif($contratacion->estado_contratacion === 'cancelado')
-                                <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">Cancelado</span>
+                                <span class="font-semibold rounded px-4 py-2 text-sm" style="background-color: #ef4444; color: #ffffff;">Cancelado</span>
                             @else
-                                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">{{ ucfirst($contratacion->estado_contratacion) }}</span>
+                                <span class="font-semibold rounded px-4 py-2 text-sm" style="background-color: #3b82f6; color: #ffffff;">{{ ucfirst($contratacion->estado_contratacion) }}</span>
                             @endif
                         </td>
-                        <td class="py-4 px-4 text-center">
+                        <td class="px-4 py-3 text-center text-base border-r border-gray-300">
                             @if($contratacion->pagos->first())
                                 <span class="text-amber-600 font-semibold">{{ $contratacion->pagos->first()->fecha_pago->format('d/m/Y') }}</span>
                             @else
                                 <span class="text-gray-400">-</span>
                             @endif
                         </td>
-                        <td class="py-4 px-4 text-center">
+                        <td class="px-4 py-3 text-center">
                             @if($contratacion->estado_contratacion === 'activo')
                                 <button 
                                     wire:click="confirmarCancelacion('{{ $contratacion->id }}')"
-                                    class="text-red-600 hover:text-red-800 font-semibold text-sm"
-                                >
+                                    class="font-bold rounded text-white text-sm py-2 px-5 transition-all duration-300" 
+                                    style="background-color: #ef4444;"
+                                    onmouseover="this.style.boxShadow='0 0 20px rgba(239, 68, 68, 0.8)'; this.style.transform='translateY(-2px) scale(1.05)';"
+                                    onmouseout="this.style.boxShadow='0 0 10px rgba(239, 68, 68, 0.4)'; this.style.transform='translateY(0) scale(1)';">
                                     Anular Servicio
                                 </button>
                             @else
@@ -142,9 +144,9 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="py-8 text-center text-gray-500">
-                            <i class="fas fa-inbox text-4xl mb-3"></i>
-                            <p>No tienes servicios contratados</p>
+                        <td colspan="6" class="p-12 text-center bg-white">
+                            <i class="fas fa-inbox text-gray-300 text-5xl mb-4"></i>
+                            <p class="text-gray-500 text-base font-medium">No tienes servicios contratados</p>
                             <button wire:click="openAddModal" class="mt-3 text-amber-600 hover:text-amber-700 font-semibold">
                                 Contratar un servicio
                             </button>
@@ -157,7 +159,7 @@
 
         <!-- Pagination -->
         @if($contrataciones->hasPages())
-        <div class="mb-6">
+        <div class="mb-6 flex justify-center">
             {{ $contrataciones->links() }}
         </div>
         @endif

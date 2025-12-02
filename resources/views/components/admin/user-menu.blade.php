@@ -2,6 +2,17 @@
 
 <nav class="mt-8 flex flex-col h-[calc(100vh-400px)]">
     <ul class="space-y-3 flex-1">
+        <!-- Botón PÁGINA PRINCIPAL -->
+        <li>
+            <a href="{{ route('home') }}" 
+               class="menu-btn flex items-center justify-center px-4 py-3 rounded-lg font-bold uppercase tracking-wider transition-all duration-300"
+               style="background-color: transparent; color: white; box-shadow: none;"
+               onmouseover="this.style.backgroundColor='#374151'; this.style.boxShadow='0 0 25px rgba(255, 255, 255, 0.8)'; this.style.transform='translateY(-2px)';"
+               onmouseout="this.style.backgroundColor='transparent'; this.style.boxShadow='none'; this.style.transform='translateY(0)';">
+                <span class="text-sm">PÁGINA PRINCIPAL</span>
+            </a>
+        </li>
+        
         @forelse($menuItems as $item)
             <li>
                 <a href="{{ $item['url'] }}" 

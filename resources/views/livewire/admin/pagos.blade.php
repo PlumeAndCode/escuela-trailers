@@ -225,13 +225,6 @@
             </div>
         </div>
     </div>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Modal para editar pago -->
     @if($showEditModal && $pagoSeleccionado)
@@ -263,6 +256,7 @@
                             <select wire:model="editForm.tipo_pago" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-gray-900 text-sm bg-white">
                                 <option value="efectivo">Efectivo</option>
                                 <option value="tarjeta">Tarjeta</option>
+                                <option value="transferencia">Transferencia</option>
                                 <option value="linea">Línea</option>
                             </select>
                             @error('editForm.tipo_pago') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror

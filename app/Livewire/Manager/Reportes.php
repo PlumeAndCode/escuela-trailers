@@ -97,7 +97,7 @@ class Reportes extends Component
         ->get()
         ->map(function ($renta) {
             $diasRestantes = $renta->fecha_devolucion_estimada 
-                ? now()->diffInDays($renta->fecha_devolucion_estimada, false) 
+                ? (int) now()->diffInDays($renta->fecha_devolucion_estimada, false) 
                 : null;
             $renta->dias_restantes = $diasRestantes;
             $renta->proximo_vencer = $renta->estado_renta === 'activa' && $diasRestantes !== null && $diasRestantes <= 3;

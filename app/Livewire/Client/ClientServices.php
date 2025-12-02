@@ -9,6 +9,7 @@ use App\Models\Servicio;
 use App\Models\Pago;
 use App\Models\Curso;
 use App\Models\Leccion;
+use App\Models\AvanceLeccion;
 use Carbon\Carbon;
 
 class ClientServices extends Component
@@ -102,11 +103,18 @@ class ClientServices extends Component
             ];
 
             foreach ($leccionesPredeterminadas as $leccionData) {
-                Leccion::create([
+                $leccion = Leccion::create([
                     'id_curso' => $curso->id,
                     'nombre_leccion' => $leccionData['nombre'],
                     'descripcion' => $leccionData['descripcion'],
                     'estado_leccion' => 'no_iniciada',
+                ]);
+
+                // Crear el avance de lección para que el encargado pueda ver y gestionar
+                AvanceLeccion::create([
+                    'id_leccion' => $leccion->id,
+                    'id_contratacion' => $contratacion->id,
+                    'estado_avance' => 'pendiente',
                 ]);
             }
         }
