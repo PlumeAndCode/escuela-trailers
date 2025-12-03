@@ -11,6 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
  * Modelo User
@@ -144,10 +145,17 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Relación: Un usuario tiene muchas lecciones individuales
+     * Relación: Un usuario tiene muchas lecciones individuales (a través de contrataciones)
      */
-    public function leccionesIndividuales(): HasMany
+    public function leccionesIndividuales(): HasManyThrough
     {
-        return $this->hasMany(LeccionIndividual::class, 'id_usuario');
+        return $this->hasManyThrough(
+            LeccionIndividual::class,
+            Contratacion::class,
+            'id_usuario',      // Foreign key on contrataciones table
+            'id_contratacion', // Foreign key on lecciones_individuales table
+            'id',              // Local key on users table
+            'id'               // Local key on contrataciones table
+        );
     }
 }

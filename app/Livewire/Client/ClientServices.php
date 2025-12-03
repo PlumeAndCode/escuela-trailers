@@ -10,6 +10,7 @@ use App\Models\Pago;
 use App\Models\Curso;
 use App\Models\Leccion;
 use App\Models\AvanceLeccion;
+use App\Models\LeccionIndividual;
 use Carbon\Carbon;
 
 class ClientServices extends Component
@@ -117,6 +118,16 @@ class ClientServices extends Component
                     'estado_avance' => 'pendiente',
                 ]);
             }
+        }
+
+        // Si el servicio es de tipo 'leccion', crear la lección individual
+        if ($this->servicioSeleccionado->tipo_servicio === 'leccion') {
+            LeccionIndividual::create([
+                'id_contratacion' => $contratacion->id,
+                'fecha_programada' => now()->addDays(3), // Programar para 3 días después por defecto
+                'estado_leccion' => 'pendiente',
+                'observaciones' => null,
+            ]);
         }
 
         $this->closeAddModal();
