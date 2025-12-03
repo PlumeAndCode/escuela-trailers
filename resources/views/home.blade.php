@@ -3,6 +3,59 @@
 @section('title', 'Inicio - DriveMaster Pro')
 
 @section('content')
+    <!-- Modal de Verificación de Email -->
+    @if(session('show_verification_modal'))
+    <div id="verification-modal" class="fixed inset-0 bg-gradient-to-br from-gray-900/95 to-gray-700/90 z-[1000] flex items-center justify-center p-5">
+        <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl p-10 max-w-md w-full relative shadow-2xl border border-gray-100">
+            <div class="flex flex-col items-center">
+                <!-- Icon -->
+                <div class="w-20 h-20 bg-blue-500 text-white rounded-full flex items-center justify-center text-3xl mb-5">
+                    <i class="fas fa-envelope-open-text"></i>
+                </div>
+                
+                <!-- Title -->
+                <h2 class="text-gray-900 text-2xl font-bold mb-4">Verifica tu Correo</h2>
+                
+                <!-- Message -->
+                <p class="text-gray-600 text-center mb-6">
+                    ¡Gracias por registrarte! Te hemos enviado un enlace de verificación a 
+                    <span class="font-semibold text-amber-600">{{ session('verification_email') }}</span>. 
+                    Por favor revisa tu bandeja de entrada.
+                </p>
+                
+                <!-- Resend Form -->
+                <form method="POST" action="{{ route('verification.send') }}" class="w-full mb-4">
+                    @csrf
+                    <button 
+                        type="submit" 
+                        class="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-full py-3 font-semibold shadow-lg shadow-amber-500/30 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-amber-500/50 transition-all"
+                    >
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        Reenviar Correo de Verificación
+                    </button>
+                </form>
+                
+                <!-- Logout Form -->
+                <form method="POST" action="{{ route('logout') }}" class="w-full">
+                    @csrf
+                    <button 
+                        type="submit" 
+                        class="w-full bg-gray-200 text-gray-700 rounded-full py-3 font-semibold hover:bg-gray-300 transition-all"
+                    >
+                        <i class="fas fa-sign-out-alt mr-2"></i>
+                        Cerrar Sesión
+                    </button>
+                </form>
+                
+                <!-- Help Text -->
+                <p class="text-gray-500 text-sm mt-6 text-center">
+                    ¿No recibiste el correo? Revisa tu carpeta de spam.
+                </p>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- Hero Section -->
     <section class="bg-gradient-to-br from-gray-900/95 to-gray-700/90 min-h-[600px] flex items-center text-white relative overflow-hidden">
         <div class="container mx-auto px-5 grid md:grid-cols-2 gap-16 items-center">
@@ -188,16 +241,16 @@
 @push('scripts')
 <script>
     // Contador animado para las estadísticas
-    const animateCounter = (element, target) => {
+    const animateCounter = (element, target, suffix = '') => {
         let current = 0;
         const increment = target / 100;
         const timer = setInterval(() => {
             current += increment;
             if (current >= target) {
-                element.textContent = target + (target < 100 ? '%' : '+');
+                element.textContent = target + suffix;
                 clearInterval(timer);
             } else {
-                element.textContent = Math.floor(current) + (target < 100 ? '%' : '+');
+                element.textContent = Math.floor(current) + suffix;
             }
         }, 20);
     };
@@ -208,7 +261,13 @@
                 const number = entry.target.querySelector('.text-4xl');
                 const text = number.textContent;
                 const value = parseInt(text.replace(/[^0-9]/g, ''));
-                animateCounter(number, value);
+                
+                // Determinar el sufijo basado en el texto original
+                let suffix = '';
+                if (text.includes('%')) suffix = '%';
+                else if (text.includes('+')) suffix = '+';
+                
+                animateCounter(number, value, suffix);
                 statsObserver.unobserve(entry.target);
             }
         });

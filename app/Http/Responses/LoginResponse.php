@@ -9,7 +9,8 @@ use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
  * LoginResponse personalizado
  * 
  * Redirige al usuario al dashboard correspondiente según su rol
- * después de un login exitoso.
+ * después de un login exitoso. Si el usuario no ha verificado su email,
+ * lo redirige a la página principal con una modal de verificación.
  */
 class LoginResponse implements LoginResponseContract
 {
@@ -22,10 +23,23 @@ class LoginResponse implements LoginResponseContract
     public function toResponse($request)
     {
         $user = auth()->user();
-        $redirectPath = $user->getDashboardPath();
+        
+        // Si es una petición AJAX/API
+        if ($request->wantsJson()) {
+            return new JsonResponse([
+                'two_factor' => false, 
+                'redirect' => $user->getDashboardPath(),
+                'verified' => $user->hasVerifiedEmail(),
+            ], 200);
+        }
 
-        return $request->wantsJson()
-            ? new JsonResponse(['two_factor' => false, 'redirect' => $redirectPath], 200)
-            : redirect()->intended($redirectPath);
+        // Si el usuario no ha verificado su email, redirigir a home con modal
+        if (!$user->hasVerifiedEmail()) {
+            return redirect('/')->with('show_verification_modal', true)
+                ->with('verification_email', $user->email);
+        }
+
+        // Usuario verificado - redirigir a su dashboard
+        return redirect()->intended($user->getDashboardPath());
     }
 }

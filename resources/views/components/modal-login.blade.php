@@ -225,7 +225,7 @@
 <!-- Verify Email Modal -->
 @auth
 @if(!auth()->user()->hasVerifiedEmail())
-<div id="verifyEmailModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[1000] flex items-center justify-center p-5">
+<div id="verifyEmailModal" class="fixed inset-0 bg-gradient-to-br from-gray-900/95 to-gray-700/90 z-[1000] flex items-center justify-center p-5">
     <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl p-10 max-w-md w-full relative shadow-2xl border border-gray-100 animate-slideIn">
         <div class="flex flex-col items-center">
             <!-- Icon -->
