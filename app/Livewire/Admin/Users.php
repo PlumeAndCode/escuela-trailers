@@ -175,6 +175,7 @@ class Users extends Component
             'password' => Hash::make($this->createForm['password']),
             'rol' => $this->createForm['rol'],
             'estado_usuario' => $this->createForm['estado_usuario'],
+            'email_verified_at' => now(), // Usuario creado por admin ya está verificado
         ]);
 
         // Asignar rol de Spatie
