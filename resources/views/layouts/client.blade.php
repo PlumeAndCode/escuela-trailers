@@ -20,22 +20,22 @@
 <body class="font-sans antialiased bg-gray-100 overflow-hidden">
     <div class="h-screen flex">
         <!-- Sidebar -->
-        <div class="w-64 bg-slate-800 text-white h-screen flex-shrink-0 p-6 overflow-hidden">
+        <div class="w-64 bg-slate-800 text-white h-screen flex-shrink-0 p-4 overflow-y-auto">
             <!-- Logo -->
-            <div class="text-2xl font-bold text-center mb-8">
+            <div class="text-xl font-bold text-center mb-4">
                 Drive<span class="text-amber-500">Master</span> Pro
             </div>
 
             <!-- User Profile Card (Tarjeta Naranja - Igual que Admin) -->
-            <div class="bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg p-4 text-white shadow-md hover:bg-amber-600 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/50 mb-6">
-                <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg p-3 text-white shadow-md hover:bg-amber-600 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/50 mb-4">
+                <div class="flex items-center gap-2">
                     <img src="{{ auth()->user()->profile_photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->nombre_completo ?? 'Usuario') . '&background=0D8ABC&color=fff' }}" 
-                         class="w-16 h-16 rounded-full object-cover border-4 border-white shadow-lg flex-shrink-0" 
+                         class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-lg flex-shrink-0" 
                          alt="avatar">
                     <div class="min-w-0 flex-1">
-                        <div class="font-bold text-base truncate">{{ auth()->user()->nombre_completo ?? 'Usuario' }}</div>
+                        <div class="font-bold text-sm truncate">{{ auth()->user()->nombre_completo ?? 'Usuario' }}</div>
                         <div class="text-amber-100 text-xs truncate" title="{{ auth()->user()->email ?? '' }}">{{ auth()->user()->email ?? '' }}</div>
-                        <div class="text-xs text-amber-50 mt-1 uppercase tracking-wide">CLIENTE</div>
+                        <div class="text-xs text-amber-50 uppercase tracking-wide">CLIENTE</div>
                     </div>
                 </div>
             </div>

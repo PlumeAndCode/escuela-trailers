@@ -20,9 +20,9 @@
 <body class="font-sans antialiased bg-gray-100 overflow-hidden">
     <div class="h-screen flex">
         <!-- Sidebar -->
-        <div class="w-64 bg-slate-800 text-white h-screen flex-shrink-0 p-6 overflow-hidden">
+        <div class="w-64 bg-slate-800 text-white h-screen flex-shrink-0 p-4 overflow-y-auto">
             <!-- Logo -->
-            <div class="text-2xl font-bold text-center mb-8">
+            <div class="text-xl font-bold text-center mb-4">
                 Drive<span class="text-amber-500">Master</span> Pro
             </div>
 
@@ -59,7 +59,7 @@
             @endphp
 
             @include('components.admin.user-info', ['user' => $currentUser])
-            <div class="mt-6">
+            <div class="mt-4">
                 @include('components.admin.user-menu', ['user' => $currentUser, 'menuItems' => $managerMenuItems])
             </div>
         </div>
