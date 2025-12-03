@@ -85,10 +85,19 @@
                                     <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $avance->lecciones_total }}</td>
                                     <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $avance->lecciones_completadas }}</td>
                                     <td class="px-4 py-3 text-center text-gray-800 textbase">
-                                        <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden mb-2">
-                                            <div class="h-3 rounded-full transition-all duration-300" style="width: {{ $avance->porcentaje }}%; background-color: #10b981;"></div>
+                                        <div class="flex flex-col items-center gap-1">
+                                            <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                                                <div class="h-3 rounded-full transition-all duration-500"
+                                                    style="width: {{ $avance->porcentaje }}%; background-color: {{ $avance->porcentaje >= 75 ? '#10b981' : ($avance->porcentaje >= 50 ? '#f59e0b' : '#3b82f6') }};"></div>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="font-bold text-sm"
+                                                    style="color: {{ $avance->porcentaje >= 75 ? '#10b981' : ($avance->porcentaje >= 50 ? '#f59e0b' : '#3b82f6') }};">
+                                                    {{ $avance->porcentaje }}%
+                                                </span>
+                                                <span class="text-gray-500 text-xs">({{ $avance->lecciones_completadas }}/{{ $avance->lecciones_total }})</span>
+                                            </div>
                                         </div>
-                                        <span class="font-bold text-gray-900 text-sm">{{ $avance->porcentaje }}%</span>
                                     </td>
                                 </tr>
                             @empty
@@ -242,7 +251,7 @@
 
         <!-- TAB: Reportes -->
 <div id="section-reportes" style="display: {{ $activeTab === 'reportes' ? 'block' : 'none' }};">
-            <h2 class="text-2xl font-bold mb-6 text-gray-900">Reportes de Uso y Mantenimiento de Tráilers</h2>
+            <h2 class="text-2xl font-bold mb-6 text-gray-900 no-underline" style="text-decoration: none;">Reportes de Uso y Mantenimiento de Trailers</h2>
 
             <!-- Controles superiores -->
             <div class="flex justify-between items-center mb-6 gap-4 flex-wrap bg-white p-4 rounded-lg shadow-md">
@@ -293,7 +302,11 @@
                                     <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailer->placa }}</td>
                                     <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailer->numero_serie }}</td>
                                     <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300">{{ $trailer->motivo_mantenimiento ?? 'Sin especificar' }}</td>
-                                    <td class="px-4 py-3 text-center text-gray-800 textbase border-r border-gray-300"><span class="font-semibold rounded px-3 py-1 text-sm" style="background-color: #fed7aa; color: #92400e;">En Mantenimiento</span></td>
+                                    <td class="px-4 py-3 text-center textbase border-r border-gray-300">
+                                        <span class="font-bold rounded text-white text-sm py-2 px-5 inline-block" style="background-color: #F59E0B;">
+                                            En Mantenimiento
+                                        </span>
+                                    </td>
                                     <td class="px-4 py-3 text-center text-gray-800 textbase">
                                         <button wire:click="cambiarEstadoTrailer('{{ $trailer->id }}', 'disponible')" 
                                             class="text-white font-bold rounded-lg px-4 py-2 transition-all duration-300" 
