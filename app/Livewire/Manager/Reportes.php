@@ -72,14 +72,14 @@ class Reportes extends Component
             ->toArray();
 
         return [
-            'labels' => ['No Iniciada', 'En Progreso', 'Completada', 'Bloqueada'],
+            'labels' => ['Pendiente', 'En Progreso', 'Vista', 'Pagada'],
             'data' => [
-                $datos['no_iniciada'] ?? 0,
+                $datos['pendiente'] ?? 0,
                 $datos['en_progreso'] ?? 0,
-                $datos['completada'] ?? 0,
-                $datos['bloqueada'] ?? 0,
+                $datos['vista'] ?? 0,
+                $datos['pagada'] ?? 0,
             ],
-            'colors' => ['#f59e0b', '#3b82f6', '#10b981', '#ef4444'],
+            'colors' => ['#f59e0b', '#3b82f6', '#8b5cf6', '#10b981'],
         ];
     }
 
@@ -134,13 +134,14 @@ class Reportes extends Component
             ->toArray();
 
         return [
-            'labels' => ['Pendiente', 'Vista', 'Pagada'],
+            'labels' => ['Pendiente', 'En Progreso', 'Vista', 'Pagada'],
             'data' => [
                 $datos['pendiente'] ?? 0,
+                $datos['en_progreso'] ?? 0,
                 $datos['vista'] ?? 0,
                 $datos['pagada'] ?? 0,
             ],
-            'colors' => ['#f59e0b', '#3b82f6', '#10b981'],
+            'colors' => ['#f59e0b', '#3b82f6', '#8b5cf6', '#10b981'],
         ];
     }
 

@@ -297,10 +297,14 @@ class Control extends Component
             ->get();
     }
 
-    // Obtener cursos para el selector
+    // Obtener cursos para el selector (únicos por nombre)
     public function getCursosProperty()
     {
-        return Curso::all();
+        return Curso::select('id', 'nombre_curso')
+            ->distinct('nombre_curso')
+            ->orderBy('nombre_curso')
+            ->get()
+            ->unique('nombre_curso');
     }
 
     // Obtener contrataciones activas de servicios de renta para el selector
@@ -364,10 +368,10 @@ class Control extends Component
             })->filter();
         })->flatten();
 
-        // Filtrar por curso si se especifica
+        // Filtrar por nombre de curso si se especifica
         if (!empty($this->filtroCursoAvance)) {
             $avancesAgrupados = $avancesAgrupados->filter(function ($item) {
-                return $item->curso_id === $this->filtroCursoAvance;
+                return $item->curso === $this->filtroCursoAvance;
             });
         }
 
