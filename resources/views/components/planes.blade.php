@@ -3,8 +3,8 @@
     <div class="container mx-auto px-5">
         <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-8">
             <!-- Curso Completo -->
-            <div class="course-card bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group hover:-translate-y-4">
-                <div class="course-header relative h-64 bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden">
+            <div class="course-card bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group hover:-translate-y-4 flex flex-col h-full">
+                <div class="course-header relative h-64 bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden flex-shrink-0">
                     <!-- Efecto de rotación animado -->
                     <div class="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-to-r from-transparent via-amber-500/10 to-transparent animate-spin"
                          style="animation-duration: 6s;"></div>
@@ -16,7 +16,7 @@
                         📚
                     </div>
                 </div>
-                <div class="course-body p-6">
+                <div class="course-body p-6 flex flex-col flex-grow">
                     <div class="course-category text-amber-600 font-semibold text-sm uppercase tracking-wider mb-2">
                         Formación Completa
                     </div>
@@ -53,7 +53,7 @@
                         </li>
                     </ul>
                 </div>
-                <div class="course-footer bg-gray-50 px-6 py-4 border-t border-gray-200">
+                <div class="course-footer bg-gray-50 px-6 py-4 border-t border-gray-200 mt-auto">
                     <div class="flex justify-between items-center">
                         <div class="course-price">
                             <span class="price-label text-gray-600 text-sm block">Precio Total</span>
@@ -69,8 +69,8 @@
             </div>
 
             <!-- Lecciones Individuales -->
-            <div class="course-card bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group hover:-translate-y-4">
-                <div class="course-header relative h-64 bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden">
+            <div class="course-card bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group hover:-translate-y-4 flex flex-col h-full">
+                <div class="course-header relative h-64 bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden flex-shrink-0">
                     <!-- Efecto de rotación animado -->
                     <div class="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-to-r from-transparent via-amber-500/10 to-transparent animate-spin"
                          style="animation-duration: 6s;"></div>
@@ -82,7 +82,7 @@
                         🎯
                     </div>
                 </div>
-                <div class="course-body p-6">
+                <div class="course-body p-6 flex flex-col flex-grow">
                     <div class="course-category text-amber-600 font-semibold text-sm uppercase tracking-wider mb-2">
                         Aprendizaje Personalizado
                     </div>
@@ -119,7 +119,7 @@
                         </li>
                     </ul>
                 </div>
-                <div class="course-footer bg-gray-50 px-6 py-4 border-t border-gray-200">
+                <div class="course-footer bg-gray-50 px-6 py-4 border-t border-gray-200 mt-auto">
                     <div class="flex justify-between items-center">
                         <div class="course-price">
                             <span class="price-label text-gray-600 text-sm block">Por Sesión</span>
@@ -135,8 +135,8 @@
             </div>
 
             <!-- Trámite de Licencia -->
-            <div class="course-card bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group hover:-translate-y-4">
-                <div class="course-header relative h-64 bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden">
+            <div class="course-card bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group hover:-translate-y-4 flex flex-col h-full">
+                <div class="course-header relative h-64 bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden flex-shrink-0">
                     <!-- Efecto de rotación animado -->
                     <div class="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-to-r from-transparent via-amber-500/10 to-transparent animate-spin"
                          style="animation-duration: 6s;"></div>
@@ -148,7 +148,7 @@
                         📄
                     </div>
                 </div>
-                <div class="course-body p-6">
+                <div class="course-body p-6 flex flex-col flex-grow">
                     <div class="course-category text-amber-600 font-semibold text-sm uppercase tracking-wider mb-2">
                         Gestión Administrativa
                     </div>
@@ -185,7 +185,7 @@
                         </li>
                     </ul>
                 </div>
-                <div class="course-footer bg-gray-50 px-6 py-4 border-t border-gray-200">
+                <div class="course-footer bg-gray-50 px-6 py-4 border-t border-gray-200 mt-auto">
                     <div class="flex justify-between items-center">
                         <div class="course-price">
                             <span class="price-label text-gray-600 text-sm block">Servicio Completo</span>
@@ -201,8 +201,8 @@
             </div>
 
             <!-- Renta de Tráilers -->
-            <div class="course-card bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group hover:-translate-y-4">
-                <div class="course-header relative h-64 bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden">
+            <div class="course-card bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group hover:-translate-y-4 flex flex-col h-full">
+                <div class="course-header relative h-64 bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden flex-shrink-0">
                     <!-- Efecto de rotación animado -->
                     <div class="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-to-r from-transparent via-amber-500/10 to-transparent animate-spin"
                          style="animation-duration: 6s;"></div>
@@ -214,7 +214,7 @@
                         🚚
                     </div>
                 </div>
-                <div class="course-body p-6">
+                <div class="course-body p-6 flex flex-col flex-grow">
                     <div class="course-category text-amber-600 font-semibold text-sm uppercase tracking-wider mb-2">
                         Alquiler de Equipos
                     </div>
@@ -251,7 +251,7 @@
                         </li>
                     </ul>
                 </div>
-                <div class="course-footer bg-gray-50 px-6 py-4 border-t border-gray-200">
+                <div class="course-footer bg-gray-50 px-6 py-4 border-t border-gray-200 mt-auto">
                     <div class="flex justify-between items-center">
                         <div class="course-price">
                             <span class="price-label text-gray-600 text-sm block">Por Día</span>
