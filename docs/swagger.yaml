@@ -1,0 +1,1369 @@
+openapi: 3.0.3
+info:
+    title: Escuela de Trailers API
+    description: |
+        API REST para la aplicación móvil de la Escuela de Trailers.
+
+        ## Autenticación
+        Esta API utiliza **Laravel Sanctum** para autenticación mediante Bearer Tokens.
+
+        ### Flujo de autenticación:
+        1. Realizar login con email y contraseña en `/api/login`
+        2. Obtener el token de la respuesta
+        3. Incluir el token en el header `Authorization: Bearer {token}` en todas las peticiones
+
+        > ⚠️ **Nota:** Solo los usuarios con rol `cliente` pueden acceder a la API móvil.
+
+        ## Credenciales de Prueba
+        | Email | Contraseña |
+        |-------|------------|
+        | usuario@gmail.com | secreta123 |
+        | luis.martinez@gmail.com | secreta123 |
+        | sofia.gonzalez@gmail.com | secreta123 |
+
+    version: 1.0.0
+    contact:
+        name: Escuela de Trailers
+        email: soporte@escuela-trailers.com
+    license:
+        name: MIT
+
+servers:
+    - url: http://localhost:8000/api
+      description: Servidor de Desarrollo
+    - url: https://escuela-trailers.com/api
+      description: Servidor de Producción
+
+tags:
+    - name: Autenticación
+      description: Endpoints de login, logout y gestión de sesión
+    - name: Dashboard
+      description: Resumen general del usuario
+    - name: Servicios
+      description: Catálogo de servicios disponibles
+    - name: Contrataciones
+      description: Gestión de contrataciones del usuario
+    - name: Pagos
+      description: Historial y gestión de pagos
+    - name: Cursos
+      description: Cursos y progreso de aprendizaje
+
+paths:
+    # ==========================================
+    # AUTENTICACIÓN
+    # ==========================================
+    /login:
+        post:
+            tags:
+                - Autenticación
+            summary: Iniciar sesión
+            description: |
+                Autentica al usuario y devuelve un token de acceso.
+
+                **Restricción:** Solo usuarios con rol `cliente` pueden acceder.
+            operationId: login
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            required:
+                                - email
+                                - password
+                            properties:
+                                email:
+                                    type: string
+                                    format: email
+                                    example: usuario@gmail.com
+                                password:
+                                    type: string
+                                    format: password
+                                    example: secreta123
+                                device_name:
+                                    type: string
+                                    description: Nombre del dispositivo (opcional)
+                                    example: iPhone 15 Pro
+            responses:
+                "200":
+                    description: Login exitoso
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    message:
+                                        type: string
+                                        example: Inicio de sesión exitoso
+                                    data:
+                                        type: object
+                                        properties:
+                                            user:
+                                                $ref: "#/components/schemas/UserProfile"
+                                            token:
+                                                type: string
+                                                example: 1|abc123xyz789...
+                                            token_type:
+                                                type: string
+                                                example: Bearer
+                "422":
+                    description: Error de validación o credenciales incorrectas
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ValidationError"
+
+    /logout:
+        post:
+            tags:
+                - Autenticación
+            summary: Cerrar sesión
+            description: Revoca el token de acceso actual
+            operationId: logout
+            security:
+                - bearerAuth: []
+            responses:
+                "200":
+                    description: Sesión cerrada correctamente
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/SuccessMessage"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+
+    /perfil:
+        get:
+            tags:
+                - Autenticación
+            summary: Obtener perfil
+            description: Obtiene la información del perfil del usuario autenticado
+            operationId: getPerfil
+            security:
+                - bearerAuth: []
+            responses:
+                "200":
+                    description: Perfil del usuario
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        $ref: "#/components/schemas/UserProfileFull"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+
+        put:
+            tags:
+                - Autenticación
+            summary: Actualizar perfil
+            description: Actualiza la información del perfil del usuario
+            operationId: updatePerfil
+            security:
+                - bearerAuth: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                nombre_completo:
+                                    type: string
+                                    example: Juan García López
+                                telefono:
+                                    type: string
+                                    example: "4439876543"
+            responses:
+                "200":
+                    description: Perfil actualizado
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    message:
+                                        type: string
+                                        example: Perfil actualizado correctamente
+                                    data:
+                                        type: object
+                                        properties:
+                                            id:
+                                                type: string
+                                                format: uuid
+                                            nombre_completo:
+                                                type: string
+                                            email:
+                                                type: string
+                                            telefono:
+                                                type: string
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+
+    # ==========================================
+    # DASHBOARD
+    # ==========================================
+    /dashboard:
+        get:
+            tags:
+                - Dashboard
+            summary: Resumen del dashboard
+            description: |
+                Obtiene un resumen completo del usuario incluyendo:
+                - Estadísticas generales
+                - Próximos pagos pendientes
+                - Servicios activos recientes
+            operationId: getDashboard
+            security:
+                - bearerAuth: []
+            responses:
+                "200":
+                    description: Dashboard del usuario
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        type: object
+                                        properties:
+                                            usuario:
+                                                type: object
+                                                properties:
+                                                    nombre:
+                                                        type: string
+                                                        example: Usuario Cliente
+                                                    email:
+                                                        type: string
+                                                        example: usuario@gmail.com
+                                            estadisticas:
+                                                $ref: "#/components/schemas/DashboardStats"
+                                            proximos_pagos:
+                                                type: array
+                                                items:
+                                                    $ref: "#/components/schemas/ProximoPago"
+                                            servicios_recientes:
+                                                type: array
+                                                items:
+                                                    $ref: "#/components/schemas/ServicioReciente"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+
+    # ==========================================
+    # SERVICIOS
+    # ==========================================
+    /servicios:
+        get:
+            tags:
+                - Servicios
+            summary: Listar servicios
+            description: Obtiene todos los servicios activos disponibles
+            operationId: getServicios
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: tipo
+                  in: query
+                  description: Filtrar por tipo de servicio
+                  required: false
+                  schema:
+                      type: string
+                      enum:
+                          - curso
+                          - leccion
+                          - licencia
+                          - renta_trailer
+            responses:
+                "200":
+                    description: Lista de servicios
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: "#/components/schemas/Servicio"
+                                    tipos_disponibles:
+                                        type: array
+                                        items:
+                                            type: string
+                                        example: [curso, leccion, licencia, renta_trailer]
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+
+    /servicios/{id}:
+        get:
+            tags:
+                - Servicios
+            summary: Detalle de servicio
+            description: Obtiene el detalle de un servicio específico
+            operationId: getServicio
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: id
+                  in: path
+                  description: UUID del servicio
+                  required: true
+                  schema:
+                      type: string
+                      format: uuid
+            responses:
+                "200":
+                    description: Detalle del servicio
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        $ref: "#/components/schemas/ServicioDetalle"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+    # ==========================================
+    # CONTRATACIONES
+    # ==========================================
+    /contrataciones:
+        get:
+            tags:
+                - Contrataciones
+            summary: Listar contrataciones
+            description: Obtiene todas las contrataciones del usuario autenticado
+            operationId: getContrataciones
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: estado
+                  in: query
+                  description: Filtrar por estado
+                  required: false
+                  schema:
+                      type: string
+                      enum:
+                          - pendiente
+                          - activo
+                          - finalizado
+                - name: tipo
+                  in: query
+                  description: Filtrar por tipo de servicio
+                  required: false
+                  schema:
+                      type: string
+                      enum:
+                          - curso
+                          - leccion
+                          - licencia
+                          - renta_trailer
+            responses:
+                "200":
+                    description: Lista de contrataciones
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: "#/components/schemas/ContratacionResumen"
+                                    total:
+                                        type: integer
+                                        example: 3
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+
+        post:
+            tags:
+                - Contrataciones
+            summary: Contratar un servicio
+            description: |
+                Crea una nueva contratación para el usuario autenticado.
+
+                - Se genera automáticamente un pago pendiente por el monto total del servicio.
+                - El pago tiene fecha límite de 7 días.
+                - Si el servicio es de tipo `curso`, se crea automáticamente el registro del curso.
+                - Permite contratar el mismo servicio múltiples veces.
+            operationId: createContratacion
+            security:
+                - bearerAuth: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            required:
+                                - id_servicio
+                            properties:
+                                id_servicio:
+                                    type: string
+                                    format: uuid
+                                    description: UUID del servicio a contratar
+                                    example: 019ae02f-3ede-728c-bf57-18ee6731d301
+            responses:
+                "201":
+                    description: Servicio contratado exitosamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    message:
+                                        type: string
+                                        example: Servicio contratado exitosamente
+                                    data:
+                                        $ref: "#/components/schemas/ContratacionCreada"
+                "400":
+                    description: El servicio no está disponible
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: false
+                                    message:
+                                        type: string
+                                        example: El servicio no está disponible
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "422":
+                    $ref: "#/components/schemas/ValidationError"
+
+    /contrataciones/{id}:
+        get:
+            tags:
+                - Contrataciones
+            summary: Detalle de contratación
+            description: Obtiene el detalle completo de una contratación incluyendo información del curso (si aplica) y resumen de pagos
+            operationId: getContratacion
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: id
+                  in: path
+                  description: UUID de la contratación
+                  required: true
+                  schema:
+                      type: string
+                      format: uuid
+            responses:
+                "200":
+                    description: Detalle de la contratación
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        $ref: "#/components/schemas/ContratacionDetalle"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+    # ==========================================
+    # PAGOS
+    # ==========================================
+    /pagos:
+        get:
+            tags:
+                - Pagos
+            summary: Listar pagos
+            description: Obtiene el historial de pagos del usuario
+            operationId: getPagos
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: estado
+                  in: query
+                  description: Filtrar por estado del pago
+                  required: false
+                  schema:
+                      type: string
+                      enum:
+                          - pagado
+                          - pendiente
+                          - vencido
+            responses:
+                "200":
+                    description: Lista de pagos con resumen
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: "#/components/schemas/PagoResumen"
+                                    resumen:
+                                        $ref: "#/components/schemas/PagosResumen"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+
+    /pagos/{id}:
+        get:
+            tags:
+                - Pagos
+            summary: Detalle de pago
+            description: Obtiene el detalle de un pago específico
+            operationId: getPago
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: id
+                  in: path
+                  description: UUID del pago
+                  required: true
+                  schema:
+                      type: string
+                      format: uuid
+            responses:
+                "200":
+                    description: Detalle del pago
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        $ref: "#/components/schemas/PagoDetalle"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+    /pagos/{id}/pagar:
+        post:
+            tags:
+                - Pagos
+            summary: Procesar un pago
+            description: |
+                Procesa un pago pendiente o vencido.
+
+                - Solo se pueden procesar pagos con estado `pendiente` o `vencido`.
+                - Si es el único pago pendiente de la contratación, esta se activa automáticamente.
+                - Devuelve información sobre si la contratación quedó activa.
+            operationId: procesarPago
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: id
+                  in: path
+                  description: UUID del pago
+                  required: true
+                  schema:
+                      type: string
+                      format: uuid
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            required:
+                                - tipo_pago
+                            properties:
+                                tipo_pago:
+                                    type: string
+                                    enum: [efectivo, tarjeta, linea]
+                                    description: Método de pago utilizado
+                                    example: tarjeta
+            responses:
+                "200":
+                    description: Pago realizado correctamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    message:
+                                        type: string
+                                        example: Pago realizado correctamente
+                                    data:
+                                        $ref: "#/components/schemas/PagoRealizado"
+                "400":
+                    description: El pago ya fue procesado
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: false
+                                    message:
+                                        type: string
+                                        example: Este pago ya fue procesado
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+                "422":
+                    $ref: "#/components/schemas/ValidationError"
+
+    /pagos/{id}/comprobante:
+        get:
+            tags:
+                - Pagos
+            summary: Descargar comprobante
+            description: |
+                Descarga el comprobante de pago en formato PDF.
+
+                **Restricción:** Solo disponible para pagos con estado `pagado`.
+            operationId: getComprobante
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: id
+                  in: path
+                  description: UUID del pago
+                  required: true
+                  schema:
+                      type: string
+                      format: uuid
+            responses:
+                "200":
+                    description: Archivo PDF del comprobante
+                    content:
+                        application/pdf:
+                            schema:
+                                type: string
+                                format: binary
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    description: Comprobante no disponible
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: false
+                                    message:
+                                        type: string
+                                        example: Comprobante no disponible. El pago debe estar pagado.
+
+    # ==========================================
+    # CURSOS
+    # ==========================================
+    /cursos:
+        get:
+            tags:
+                - Cursos
+            summary: Listar cursos
+            description: Obtiene todos los cursos en los que el usuario está inscrito
+            operationId: getCursos
+            security:
+                - bearerAuth: []
+            responses:
+                "200":
+                    description: Lista de cursos
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: "#/components/schemas/CursoResumen"
+                                    total:
+                                        type: integer
+                                        example: 2
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+
+    /cursos/{id}/progreso:
+        get:
+            tags:
+                - Cursos
+            summary: Progreso del curso
+            description: Obtiene el progreso detallado de un curso con todas sus lecciones
+            operationId: getProgresoCurso
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: id
+                  in: path
+                  description: UUID del curso
+                  required: true
+                  schema:
+                      type: string
+                      format: uuid
+            responses:
+                "200":
+                    description: Progreso del curso con lecciones
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        type: object
+                                        properties:
+                                            curso:
+                                                type: object
+                                                properties:
+                                                    id:
+                                                        type: string
+                                                        format: uuid
+                                                    nombre:
+                                                        type: string
+                                                        example: Curso Básico de Manejo de Tráiler
+                                                    descripcion:
+                                                        type: string
+                                            progreso:
+                                                $ref: "#/components/schemas/ProgresoInfo"
+                                            lecciones:
+                                                type: array
+                                                items:
+                                                    $ref: "#/components/schemas/Leccion"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+# ==========================================
+# COMPONENTS
+# ==========================================
+components:
+    securitySchemes:
+        bearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: Sanctum Token
+            description: |
+                Token obtenido del endpoint `/api/login`.
+
+                Formato: `Bearer {token}`
+
+    responses:
+        Unauthorized:
+            description: No autenticado o token inválido
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            message:
+                                type: string
+                                example: Unauthenticated.
+
+        NotFound:
+            description: Recurso no encontrado
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            success:
+                                type: boolean
+                                example: false
+                            message:
+                                type: string
+                                example: Recurso no encontrado
+
+    schemas:
+        # --- Auth & User ---
+        UserProfile:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                    example: 019ae02f-3ede-728c-bf57-18ee6731d301
+                nombre_completo:
+                    type: string
+                    example: Usuario Cliente
+                email:
+                    type: string
+                    format: email
+                    example: usuario@gmail.com
+                telefono:
+                    type: string
+                    example: "4431112233"
+                rol:
+                    type: string
+                    enum: [cliente, encargado, administrador]
+                    example: cliente
+                email_verificado:
+                    type: boolean
+                    example: true
+                foto_perfil:
+                    type: string
+                    format: uri
+                    example: https://ui-avatars.com/api/?name=UC
+
+        UserProfileFull:
+            allOf:
+                - $ref: "#/components/schemas/UserProfile"
+                - type: object
+                  properties:
+                      created_at:
+                          type: string
+                          format: date-time
+                          example: "2025-12-02 10:30:00"
+
+        # --- Dashboard ---
+        DashboardStats:
+            type: object
+            properties:
+                servicios_activos:
+                    type: integer
+                    example: 2
+                total_contrataciones:
+                    type: integer
+                    example: 3
+                pagos_pendientes:
+                    type: integer
+                    example: 5
+                monto_pendiente:
+                    type: number
+                    format: float
+                    example: 2570.00
+                monto_pendiente_formateado:
+                    type: string
+                    example: "$2,570.00"
+                cursos_inscritos:
+                    type: integer
+                    example: 1
+                progreso_promedio:
+                    type: number
+                    format: float
+                    example: 62.5
+
+        ProximoPago:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                servicio:
+                    type: string
+                    example: Curso Básico de Manejo
+                monto:
+                    type: number
+                    format: float
+                    example: 500.00
+                monto_formateado:
+                    type: string
+                    example: "$500.00"
+                fecha:
+                    type: string
+                    format: date
+                    example: "2025-12-15"
+                estado:
+                    type: string
+                    enum: [pendiente, vencido]
+                    example: pendiente
+                vencido:
+                    type: boolean
+                    example: false
+
+        ServicioReciente:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                servicio:
+                    type: string
+                    example: Curso Básico de Manejo
+                tipo:
+                    type: string
+                    enum: [curso, leccion, licencia, renta_trailer]
+                    example: curso
+                estado:
+                    type: string
+                    enum: [pendiente, activo]
+                    example: activo
+                fecha:
+                    type: string
+                    format: date
+                    example: "2025-11-20"
+
+        # --- Servicios ---
+        Servicio:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                nombre:
+                    type: string
+                    example: Curso Básico de Manejo de Tráiler
+                tipo:
+                    type: string
+                    enum: [curso, leccion, licencia, renta_trailer]
+                    example: curso
+                descripcion:
+                    type: string
+                    example: Aprende los fundamentos del manejo de tráiler...
+                precio:
+                    type: number
+                    format: float
+                    example: 15000.00
+                precio_formateado:
+                    type: string
+                    example: "$15,000.00"
+
+        ServicioDetalle:
+            allOf:
+                - $ref: "#/components/schemas/Servicio"
+                - type: object
+                  properties:
+                      activo:
+                          type: boolean
+                          example: true
+
+        # --- Contrataciones ---
+        ContratacionResumen:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                servicio:
+                    type: object
+                    properties:
+                        id:
+                            type: string
+                            format: uuid
+                        nombre:
+                            type: string
+                            example: Curso Básico de Manejo de Tráiler
+                        tipo:
+                            type: string
+                            enum: [curso, leccion, licencia, renta_trailer]
+                        precio:
+                            type: number
+                            format: float
+                            example: 15000.00
+                fecha_contratacion:
+                    type: string
+                    format: date
+                    example: "2025-11-01"
+                estado:
+                    type: string
+                    enum: [pendiente, activo, finalizado]
+                    example: activo
+                pagos_pendientes:
+                    type: integer
+                    example: 2
+
+        ContratacionDetalle:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                servicio:
+                    type: object
+                    properties:
+                        id:
+                            type: string
+                            format: uuid
+                        nombre:
+                            type: string
+                        tipo:
+                            type: string
+                        descripcion:
+                            type: string
+                        precio:
+                            type: number
+                            format: float
+                fecha_contratacion:
+                    type: string
+                    format: date
+                estado:
+                    type: string
+                    enum: [pendiente, activo, finalizado]
+                curso:
+                    type: object
+                    nullable: true
+                    description: Solo presente si es una contratación de tipo curso
+                    properties:
+                        id:
+                            type: string
+                            format: uuid
+                        nombre:
+                            type: string
+                        descripcion:
+                            type: string
+                        avance_porcentaje:
+                            type: number
+                            format: float
+                            example: 62.5
+                        total_lecciones:
+                            type: integer
+                            example: 8
+                        lecciones_completadas:
+                            type: integer
+                            example: 5
+                pagos:
+                    type: object
+                    properties:
+                        total:
+                            type: integer
+                            example: 3
+                        pagados:
+                            type: integer
+                            example: 1
+                        pendientes:
+                            type: integer
+                            example: 2
+                        vencidos:
+                            type: integer
+                            example: 0
+                        monto_total:
+                            type: number
+                            format: float
+                            example: 15000.00
+                        monto_pagado:
+                            type: number
+                            format: float
+                            example: 5000.00
+
+        # --- Pagos ---
+        PagoResumen:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                servicio:
+                    type: string
+                    example: Curso Básico de Manejo de Tráiler
+                monto:
+                    type: number
+                    format: float
+                    example: 5000.00
+                monto_formateado:
+                    type: string
+                    example: "$5,000.00"
+                fecha_pago:
+                    type: string
+                    format: date
+                    example: "2025-12-15"
+                tipo_pago:
+                    type: string
+                    enum: [efectivo, tarjeta, linea]
+                    example: tarjeta
+                estado:
+                    type: string
+                    enum: [pagado, pendiente, vencido]
+                    example: pendiente
+
+        PagoDetalle:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                contratacion_id:
+                    type: string
+                    format: uuid
+                servicio:
+                    type: object
+                    properties:
+                        nombre:
+                            type: string
+                            example: Curso Básico de Manejo de Tráiler
+                        tipo:
+                            type: string
+                            enum: [curso, leccion, licencia, renta_trailer]
+                monto:
+                    type: number
+                    format: float
+                    example: 5000.00
+                monto_formateado:
+                    type: string
+                    example: "$5,000.00"
+                fecha_pago:
+                    type: string
+                    format: date
+                    example: "2025-11-15"
+                tipo_pago:
+                    type: string
+                    enum: [efectivo, tarjeta, linea]
+                    example: efectivo
+                estado:
+                    type: string
+                    enum: [pagado, pendiente, vencido]
+                    example: pagado
+                created_at:
+                    type: string
+                    format: date-time
+                    example: "2025-11-01 10:30:00"
+
+        PagosResumen:
+            type: object
+            properties:
+                total_pagos:
+                    type: integer
+                    example: 9
+                pagados:
+                    type: integer
+                    example: 4
+                pendientes:
+                    type: integer
+                    example: 2
+                vencidos:
+                    type: integer
+                    example: 3
+                monto_total_pagado:
+                    type: number
+                    format: float
+                    example: 17130.00
+                monto_pendiente:
+                    type: number
+                    format: float
+                    example: 2570.00
+
+        # --- Cursos ---
+        CursoResumen:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                nombre:
+                    type: string
+                    example: Curso Básico de Manejo de Tráiler
+                descripcion:
+                    type: string
+                avance_porcentaje:
+                    type: number
+                    format: float
+                    example: 62.5
+                total_lecciones:
+                    type: integer
+                    example: 8
+                lecciones_completadas:
+                    type: integer
+                    example: 5
+                estado_contratacion:
+                    type: string
+                    enum: [pendiente, activo, finalizado]
+                    example: activo
+
+        ProgresoInfo:
+            type: object
+            properties:
+                porcentaje:
+                    type: number
+                    format: float
+                    example: 62.5
+                total_lecciones:
+                    type: integer
+                    example: 8
+                completadas:
+                    type: integer
+                    example: 5
+                restantes:
+                    type: integer
+                    example: 3
+
+        Leccion:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                numero:
+                    type: integer
+                    example: 1
+                titulo:
+                    type: string
+                    example: Introducción al tráiler
+                descripcion:
+                    type: string
+                    example: Conoce las partes del tráiler y su funcionamiento
+                duracion_minutos:
+                    type: integer
+                    example: 60
+                estado:
+                    type: string
+                    enum: [completada, en_progreso, no_iniciada, bloqueada]
+                    example: completada
+                completada:
+                    type: boolean
+                    example: true
+                en_progreso:
+                    type: boolean
+                    example: false
+                bloqueada:
+                    type: boolean
+                    example: false
+
+        # --- Contratación Creada ---
+        ContratacionCreada:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                    example: 019ae02f-3ede-728c-bf57-18ee6731d401
+                servicio:
+                    type: object
+                    properties:
+                        id:
+                            type: string
+                            format: uuid
+                        nombre:
+                            type: string
+                            example: Curso Básico de Manejo de Tráiler
+                        tipo:
+                            type: string
+                            enum: [curso, leccion, licencia, renta_trailer]
+                            example: curso
+                        precio:
+                            type: number
+                            format: float
+                            example: 15000.00
+                        precio_formateado:
+                            type: string
+                            example: "$15,000.00"
+                fecha_contratacion:
+                    type: string
+                    format: date
+                    example: "2025-12-02"
+                estado:
+                    type: string
+                    enum: [pendiente, activo, finalizado]
+                    example: pendiente
+                pago:
+                    type: object
+                    properties:
+                        id:
+                            type: string
+                            format: uuid
+                        monto:
+                            type: number
+                            format: float
+                            example: 15000.00
+                        monto_formateado:
+                            type: string
+                            example: "$15,000.00"
+                        fecha_limite:
+                            type: string
+                            format: date
+                            example: "2025-12-09"
+                        estado:
+                            type: string
+                            enum: [pendiente, pagado, vencido]
+                            example: pendiente
+
+        # --- Pago Realizado ---
+        PagoRealizado:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                servicio:
+                    type: string
+                    example: Curso Básico de Manejo de Tráiler
+                monto:
+                    type: number
+                    format: float
+                    example: 15000.00
+                monto_formateado:
+                    type: string
+                    example: "$15,000.00"
+                fecha_pago:
+                    type: string
+                    format: date
+                    example: "2025-12-02"
+                tipo_pago:
+                    type: string
+                    enum: [efectivo, tarjeta, linea]
+                    example: tarjeta
+                estado:
+                    type: string
+                    enum: [pagado, pendiente, vencido]
+                    example: pagado
+                contratacion_activa:
+                    type: boolean
+                    description: Indica si la contratación quedó activa después del pago
+                    example: true
+
+        # --- Errors ---
+        ValidationError:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: Las credenciales proporcionadas son incorrectas.
+                errors:
+                    type: object
+                    additionalProperties:
+                        type: array
+                        items:
+                            type: string
+                    example:
+                        email:
+                            - Las credenciales proporcionadas son incorrectas.
+
+        SuccessMessage:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                    example: true
+                message:
+                    type: string
+                    example: Operación exitosa
