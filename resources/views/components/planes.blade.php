@@ -1,4 +1,23 @@
 <!-- COURSES GRID -->
+@php
+    $isAuthenticated = auth()->check();
+    $redirectUrl = '#';
+    $openModal = false;
+    
+    if ($isAuthenticated) {
+        $user = auth()->user();
+        if ($user->rol === 'cliente') {
+            $redirectUrl = route('client.services');
+        } elseif ($user->rol === 'encargado') {
+            $redirectUrl = route('manager.dashboard');
+        } elseif ($user->rol === 'administrador') {
+            $redirectUrl = route('admin.dashboard');
+        }
+    } else {
+        $openModal = true;
+    }
+@endphp
+
 <section class="py-20 bg-white">
     <div class="container mx-auto px-5">
         <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-8">
@@ -61,7 +80,7 @@
                                 <span class="text-amber-600">$</span>5,500
                             </div>
                         </div>
-                        <a href="#" class="btn-enroll bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg hover:-translate-y-1 transition-all">
+                        <a href="{{ $redirectUrl }}" @if($openModal) onclick="event.preventDefault(); document.getElementById('loginModal').classList.remove('hidden'); document.getElementById('loginModal').classList.add('flex');" @endif class="btn-enroll bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg hover:-translate-y-1 transition-all">
                             Inscribirme
                         </a>
                     </div>
@@ -127,7 +146,7 @@
                                 <span class="text-amber-600">$</span>450
                             </div>
                         </div>
-                        <a href="#" class="btn-enroll bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg hover:-translate-y-1 transition-all">
+                        <a href="{{ $redirectUrl }}" @if($openModal) onclick="event.preventDefault(); document.getElementById('loginModal').classList.remove('hidden'); document.getElementById('loginModal').classList.add('flex');" @endif class="btn-enroll bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg hover:-translate-y-1 transition-all">
                             Reservar
                         </a>
                     </div>
@@ -193,7 +212,7 @@
                                 <span class="text-amber-600">$</span>1,200
                             </div>
                         </div>
-                        <a href="#" class="btn-enroll bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg hover:-translate-y-1 transition-all">
+                        <a href="{{ $redirectUrl }}" @if($openModal) onclick="event.preventDefault(); document.getElementById('loginModal').classList.remove('hidden'); document.getElementById('loginModal').classList.add('flex');" @endif class="btn-enroll bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg hover:-translate-y-1 transition-all">
                             Solicitar
                         </a>
                     </div>
@@ -259,7 +278,7 @@
                                 <span class="text-amber-600">$</span>2,800
                             </div>
                         </div>
-                        <a href="#" class="btn-enroll bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg hover:-translate-y-1 transition-all">
+                        <a href="{{ $redirectUrl }}" @if($openModal) onclick="event.preventDefault(); document.getElementById('loginModal').classList.remove('hidden'); document.getElementById('loginModal').classList.add('flex');" @endif class="btn-enroll bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg hover:-translate-y-1 transition-all">
                             Rentar Ahora
                         </a>
                     </div>
