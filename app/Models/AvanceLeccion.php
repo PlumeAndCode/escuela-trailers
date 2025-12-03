@@ -38,6 +38,59 @@ class AvanceLeccion extends Model
     ];
 
     /**
+     * Boot del modelo - registrar eventos
+     */
+    protected static function booted(): void
+    {
+        // Cuando se actualiza un avance, verificar si el curso está completo
+        static::updated(function (AvanceLeccion $avance) {
+            $avance->verificarCursoCompleto();
+        });
+
+        // También verificar cuando se crea un nuevo avance
+        static::created(function (AvanceLeccion $avance) {
+            $avance->verificarCursoCompleto();
+        });
+    }
+
+    /**
+     * Verificar si el curso está 100% completado y marcar contratación como finalizada
+     */
+    public function verificarCursoCompleto(): void
+    {
+        $contratacion = $this->contratacion;
+        
+        if (!$contratacion || $contratacion->estado_contratacion === 'finalizado') {
+            return;
+        }
+
+        $curso = $contratacion->curso;
+        
+        if (!$curso) {
+            return;
+        }
+
+        $totalLecciones = $curso->lecciones()->count();
+        
+        if ($totalLecciones === 0) {
+            return;
+        }
+
+        // Contar lecciones completadas (vista o pagada)
+        $leccionesCompletadas = AvanceLeccion::where('id_contratacion', $contratacion->id)
+            ->whereIn('estado_avance', ['vista', 'pagada'])
+            ->count();
+
+        // Si todas las lecciones están completadas, finalizar la contratación
+        if ($leccionesCompletadas >= $totalLecciones) {
+            $contratacion->update(['estado_contratacion' => 'finalizado']);
+            
+            // También actualizar el avance del curso al 100%
+            $curso->update(['avance_porcentaje' => 100]);
+        }
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

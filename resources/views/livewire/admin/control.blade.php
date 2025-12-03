@@ -45,12 +45,11 @@
 
                 <div class="flex items-center gap-3 flex-wrap">
                     <label class="font-semibold whitespace-nowrap text-gray-900 text-base">Filtrar Curso:</label>
-                    <select wire:change="$refresh" wire:model="filtroCursoAvance" class="border-2 border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 text-base font-medium">
+                    <select wire:model.live="filtroCursoAvance" class="border-2 border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 text-base font-medium">
                         <option value="">Todos los Cursos</option>
-                        <option value="conduccion">Curso de Conducción A</option>
-                        <option value="seguridad">Seguridad Vial</option>
-                        <option value="remolques">Manejo de Remolques</option>
-                        <option value="señalamientos">Señalamientos y Normativas</option>
+                        @foreach($this->cursos as $curso)
+                            <option value="{{ $curso->nombre_curso }}">{{ $curso->nombre_curso }}</option>
+                        @endforeach
                     </select>
                 </div>
 
