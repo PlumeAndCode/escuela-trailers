@@ -17,10 +17,10 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
-<body class="font-sans antialiased bg-gray-100">
-    <div class="min-h-screen flex">
+<body class="font-sans antialiased bg-gray-100 overflow-hidden">
+    <div class="h-screen flex">
         <!-- Sidebar -->
-        <div class="w-64 bg-slate-800 text-white min-h-screen p-6">
+        <div class="w-64 bg-slate-800 text-white h-screen flex-shrink-0 p-6 overflow-hidden">
             <!-- Logo -->
             <div class="text-2xl font-bold text-center mb-8">
                 Drive<span class="text-amber-500">Master</span> Pro
@@ -65,7 +65,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1">
+        <div class="flex-1 overflow-y-auto">
             <main class="p-8">
                 {{ $slot }}
             </main>

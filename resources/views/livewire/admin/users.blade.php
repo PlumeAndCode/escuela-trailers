@@ -21,7 +21,7 @@
                 <label class="font-semibold whitespace-nowrap text-gray-900 text-base">Buscar:</label>
                 <input wire:input="$refresh" wire:model="search" 
                     type="text" 
-                    placeholder="Ingrese nombre o rol..." 
+                    placeholder="Buscar por nombre, email o teléfono..." 
                     class="px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white text-gray-900 placeholder-gray-400 text-base w-80">
                 
                 <button class="bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg px-6 py-2 transition-all duration-300 text-base" 
@@ -32,6 +32,38 @@
                     + Nuevo
                 </button>
             </div>
+        </div>
+
+        <!-- Filtros por rol -->
+        <div class="flex justify-center gap-3 mb-6 flex-wrap">
+            <button wire:click="$set('filtroRol', '')" 
+                class="font-bold rounded-lg px-5 py-2 transition-all duration-300 text-sm"
+                style="background-color: {{ $filtroRol === '' ? '#FF7A00' : '#ffffff' }}; color: {{ $filtroRol === '' ? '#ffffff' : '#374151' }}; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
+                onmouseover="this.style.transform='translateY(-2px)';"
+                onmouseout="this.style.transform='translateY(0)';">
+                Todos
+            </button>
+            <button wire:click="$set('filtroRol', 'cliente')" 
+                class="font-bold rounded-lg px-5 py-2 transition-all duration-300 text-sm"
+                style="background-color: {{ $filtroRol === 'cliente' ? '#FF7A00' : '#ffffff' }}; color: {{ $filtroRol === 'cliente' ? '#ffffff' : '#374151' }}; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
+                onmouseover="this.style.transform='translateY(-2px)';"
+                onmouseout="this.style.transform='translateY(0)';">
+                Clientes
+            </button>
+            <button wire:click="$set('filtroRol', 'encargado')" 
+                class="font-bold rounded-lg px-5 py-2 transition-all duration-300 text-sm"
+                style="background-color: {{ $filtroRol === 'encargado' ? '#FF7A00' : '#ffffff' }}; color: {{ $filtroRol === 'encargado' ? '#ffffff' : '#374151' }}; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
+                onmouseover="this.style.transform='translateY(-2px)';"
+                onmouseout="this.style.transform='translateY(0)';">
+                Encargados
+            </button>
+            <button wire:click="$set('filtroRol', 'administrador')" 
+                class="font-bold rounded-lg px-5 py-2 transition-all duration-300 text-sm"
+                style="background-color: {{ $filtroRol === 'administrador' ? '#FF7A00' : '#ffffff' }}; color: {{ $filtroRol === 'administrador' ? '#ffffff' : '#374151' }}; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
+                onmouseover="this.style.transform='translateY(-2px)';"
+                onmouseout="this.style.transform='translateY(0)';">
+                Administradores
+            </button>
         </div>
 
         <!-- Tabla de usuarios -->
