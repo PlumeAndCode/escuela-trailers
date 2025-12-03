@@ -91,6 +91,6 @@ class AvanceLeccion extends Model
      */
     public function getCompletadoAttribute(): bool
     {
-        return $this->estado_avance === 'completado' || $this->estado_avance === 'pagado';
+        return in_array($this->estado_avance, ['vista', 'pagada', 'completado', 'pagado']);
     }
 }
